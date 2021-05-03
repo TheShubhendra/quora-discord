@@ -9,7 +9,9 @@ from sqlalchemy.orm import (
 
 from sqlalchemy.ext.declarative import declarative_base
 
-from tgpartner.config import DATABASE_URL
+from decouple import config
+
+DATABASE_URL = config("DATABASE_URL")
 
 
 ENGINE = create_engine(DATABASE_URL, echo=True)
