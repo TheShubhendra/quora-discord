@@ -13,3 +13,8 @@ def extract_quora_username(text):
         return None
     else:
         return match.group(4)
+
+
+def create_profile_link(username):
+	return "https://www.quora.com/profile/"+username
+	
