@@ -16,5 +16,4 @@ def extract_quora_username(text):
 
 
 def create_profile_link(username):
-	return "https://www.quora.com/profile/"+username
-	
+    return "https://www.quora.com/profile/" + username
