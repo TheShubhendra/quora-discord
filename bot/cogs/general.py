@@ -9,6 +9,7 @@ class General(commands.Cog):
 
     @commands.command()
     async def invite(self, ctx):
+        """Invites bot to your server."""
         await ctx.send(INVITE_LINK)
 
 
