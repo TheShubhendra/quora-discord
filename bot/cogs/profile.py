@@ -9,8 +9,9 @@ class Profile(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def setprofile(self, ctx, arg):
-        username = extract_quora_username(arg)
+    async def setprofile(self, ctx, quora_username_or_profile_link):
+        """Links your Quora profile."""
+        username = extract_quora_username(quora_username_or_profile_link)
         if username is None:
             await ctx.reply("Username or profile link is not valid")
             return
@@ -27,8 +28,9 @@ class Profile(commands.Cog):
             await ctx.reply("An unknown error occurred.")
 
     @commands.command()
-    async def profile(self, ctx, arg):
-        await ctx.send(User(arg))
+    async def profile(self, ctx, quora_username):
+        """Gives details of any Quora profile."""
+        await ctx.send(User(quora_username))
 
 
 def setup(bot):
