@@ -10,14 +10,16 @@ logging.basicConfig(
 )
 
 TOKEN = config("TOKEN")
-
+OWNER_ID = config("OWNER_ID", None)
 activity = Streaming(
     name="Quora",
     url="https://quora.com",
 )
 bot = commands.Bot(
     command_prefix="q!",
-    description="Type q!help to get help.",
+    owner_id=OWNER_ID,
+    strip_after_prefix=True,
+    description="This bot lets you to interact with Quora.",
     activity=activity,
 )
 
