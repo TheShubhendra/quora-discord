@@ -36,11 +36,17 @@ class Profile(commands.Cog):
             await ctx.reply("An unknown error occurred.")
 
     @commands.command()
-    async def profile(self, ctx, quora_username):
+    async def profile(self, ctx, quora_username=None):
         """Gives details of any Quora profile."""
         if self._session is None:
             await self._create_session()
-
+        if quora_username is None:
+            if not api.does_user_exist(ctx.author.id):
+                await ctx.send(
+                    "Either setup your profile or pass a username with the command."
+                )
+                return
+            quora_username = api.get_quora_username(ctx.author.id)
         user = User(quora_username, session=self._session)
         profile = await user.profile()
         await ctx.send(embed=profile_embed(profile))
