@@ -40,7 +40,13 @@ class Profile(commands.Cog):
         """Gives details of any Quora profile."""
         if self._session is None:
             await self._create_session()
-        if quora_username is None:
+        if len(ctx.message.mentions) > 0:
+            discord_id = ctx.message.mentions[0].id
+            if not api.does_user_exist(discord_id):
+                await ctx.reply("Mentioned user's profile not found.")
+                return
+            quora_username = api.get_quora_username(discord_id)
+        elif quora_username is None:
             if not api.does_user_exist(ctx.author.id):
                 await ctx.send(
                     "Either setup your profile or pass a username with the command."
