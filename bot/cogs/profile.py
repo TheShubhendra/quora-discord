@@ -1,7 +1,10 @@
 from discord.ext import commands
 from quora import User
 from bot.database import userprofile_api as api
-from bot.utils.parser import extract_quora_username
+from bot.utils import (
+    extract_quora_username,
+    profile_embed,
+)
 
 
 class Profile(commands.Cog):
@@ -32,7 +35,7 @@ class Profile(commands.Cog):
         """Gives details of any Quora profile."""
         user = User(quora_username)
         profile = await user.profile()
-        await ctx.send(profile)
+        await ctx.send(embed=profile_embed(profile))
 
 
 def setup(bot):
