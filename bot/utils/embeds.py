@@ -1,4 +1,5 @@
 from discord import Embed, Colour
+from bot.utils import create_profile_link
 
 
 def profile_embed(profile):
@@ -36,5 +37,12 @@ def profile_embed(profile):
             profile
         ),
     )
-
+    try:
+        embed.set_author(
+            name=profile.firstName + " " + profile.lastName,
+            url=create_profile_link(profile.username),
+            icon_url=profile.profileImage,
+        )
+    except:
+        pass
     return embed
