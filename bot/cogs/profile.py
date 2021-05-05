@@ -43,18 +43,24 @@ class Profile(commands.Cog):
         if len(ctx.message.mentions) > 0:
             discord_id = ctx.message.mentions[0].id
             if not api.does_user_exist(discord_id):
-                await ctx.reply("Mentioned user's profile not found.")
+                await ctx.reply("Mentioned user's username not found on database.")
                 return
             quora_username = api.get_quora_username(discord_id)
         elif quora_username is None:
             if not api.does_user_exist(ctx.author.id):
                 await ctx.send(
-                    "Either setup your profile or pass a username with the command."
+                    "Either setup your profile first or pass a username with the command."
                 )
                 return
             quora_username = api.get_quora_username(ctx.author.id)
         user = User(quora_username, session=self._session)
-        profile = await user.profile()
+        try:
+            profile = await user.profile()
+        except ProfileNotFoundError:
+            await ctx.reply(
+                f"No Quora profile found with the username {quora_username}."
+            )
+            return
         await ctx.send(embed=profile_embed(profile))
 
 
