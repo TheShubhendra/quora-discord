@@ -1,4 +1,5 @@
 from discord.ext import commands
+from aiohttp import ClientSession
 from quora import User
 from bot.database import userprofile_api as api
 from bot.utils import (
@@ -10,6 +11,10 @@ from bot.utils import (
 class Profile(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self._session = None
+
+    async def _create_session(self):
+        self._session = ClientSession()
 
     @commands.command()
     async def setprofile(self, ctx, quora_username_or_profile_link):
@@ -33,7 +38,10 @@ class Profile(commands.Cog):
     @commands.command()
     async def profile(self, ctx, quora_username):
         """Gives details of any Quora profile."""
-        user = User(quora_username)
+        if self._session is None:
+            await self._create_session()
+
+        user = User(quora_username, session=self._session)
         profile = await user.profile()
         await ctx.send(embed=profile_embed(profile))
 
