@@ -1,6 +1,7 @@
 from discord.ext import commands
 from aiohttp import ClientSession
 from quora import User
+from quora.exceptions import ProfileNotFoundError
 from bot.database import userprofile_api as api
 from bot.utils import (
     extract_quora_username,
@@ -35,11 +36,7 @@ class Profile(commands.Cog):
         except:
             await ctx.reply("An unknown error occurred.")
 
-    @commands.command()
-    async def profile(self, ctx, quora_username=None):
-        """Gives details of any Quora profile."""
-        if self._session is None:
-            await self._create_session()
+    async def get_username(self, ctx, quora_username=None):
         if len(ctx.message.mentions) > 0:
             discord_id = ctx.message.mentions[0].id
             if not api.does_user_exist(discord_id):
@@ -53,6 +50,16 @@ class Profile(commands.Cog):
                 )
                 return
             quora_username = api.get_quora_username(ctx.author.id)
+        return quora_username
+
+    @commands.command()
+    async def profile(self, ctx, quora_username=None):
+        """Gives details of any Quora profile."""
+        if self._session is None:
+            await self._create_session()
+        quora_username = await self.get_username(ctx, quora_username)
+        if quora_username is None:
+            return
         user = User(quora_username, session=self._session)
         try:
             profile = await user.profile()
