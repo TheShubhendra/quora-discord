@@ -6,6 +6,7 @@ from bot.database import userprofile_api as api
 from bot.utils import (
     extract_quora_username,
     profile_embed,
+    profile_pic_embed,
 )
 
 
@@ -69,6 +70,24 @@ class Profile(commands.Cog):
             )
             return
         await ctx.send(embed=profile_embed(profile))
+
+    @commands.command(aliases=["picture", "pfp", "dp"])
+    async def pic(self, ctx, args=None):
+        """Show the profile picture of Quora profile."""
+        if self._session is None:
+            self._create_session()
+        quora_username = await self.get_username(ctx, args)
+        if quora_username is None:
+            return
+        try:
+            user = User(quora_username, session=self._session)
+            profile = await user.profile()
+        except ProfileNotFoundError:
+            await ctx.reply(
+                f"No Quora profile found with the username `{quora_username}`."
+            )
+            return
+        await ctx.send(embed=profile_pic_embed(profile))
 
 
 def setup(bot):

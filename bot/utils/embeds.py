@@ -46,3 +46,12 @@ def profile_embed(profile):
     except:
         pass
     return embed
+
+
+def profile_pic_embed(profile):
+    embed = Embed(
+        title=profile.username,
+        colour=Colour.random(),
+    )
+    embed.set_image(url=profile.profileImage)
+    return embed
