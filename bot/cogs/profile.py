@@ -69,6 +69,9 @@ class Profile(commands.Cog):
                 f"No Quora profile found with the username `{quora_username}`."
             )
             return
+        except Exception as e:
+            await ctx.reply("```\n"+e+"\n```")
+            return
         await ctx.send(embed=profile_embed(profile))
 
     @commands.command(aliases=["picture", "pfp", "dp"])
