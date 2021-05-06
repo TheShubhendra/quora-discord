@@ -65,7 +65,7 @@ class Profile(commands.Cog):
             profile = await user.profile()
         except ProfileNotFoundError:
             await ctx.reply(
-                f"No Quora profile found with the username {quora_username}."
+                f"No Quora profile found with the username `{quora_username}`."
             )
             return
         await ctx.send(embed=profile_embed(profile))
