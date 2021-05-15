@@ -1,5 +1,5 @@
 discord.py
 python-decouple
-pyquora==0.0.2
+git+git://github.com/TheShubhendra/pyquora@main#egg=pyquora
 sqlalchemy==1.3.22
 psycopg2
