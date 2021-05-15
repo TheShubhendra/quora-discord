@@ -7,6 +7,7 @@ from bot.utils import (
     extract_quora_username,
     profile_embed,
     profile_pic_embed,
+    profile_bio_embed,
 )
 
 
@@ -81,7 +82,7 @@ class Profile(commands.Cog):
     async def pic(self, ctx, args=None):
         """Show the profile picture of Quora profile."""
         if self._session is None:
-            self._create_session()
+            await self._create_session()
         quora_username = await self.get_username(ctx, args)
         if quora_username is None:
             return
@@ -94,6 +95,28 @@ class Profile(commands.Cog):
             )
             return
         await ctx.send(embed=profile_pic_embed(profile))
+
+    @commands.command(aliases=["profileBio", "intro"])
+    async def bio(self, ctx, args=None):
+        """Show the profile bio of Quora user."""
+        if self._session is None:
+            await self._create_session()
+        quora_username = await self.get_username(ctx, args)
+        if quora_username is None:
+            return
+        try:
+            user = User(quora_username, session=self._session)
+            profile = await user.profile()
+        except ProfileNotFoundError:
+            await ctx.reply(
+                f"No Quora profile found with the username `{quora_username}`."
+            )
+            return
+        embed = profile_bio_embed(profile)
+        if embed is not None:
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send("```\n" + profile.profileBio + "\n```")
 
 
 def setup(bot):

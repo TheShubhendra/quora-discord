@@ -19,10 +19,7 @@ def profile_embed(profile):
         )
     except:
         pass
-    embed.add_field(
-        name="Profile Bio",
-        value=profile.profileBio,
-    )
+
     try:
         embed.add_field(
             name="Views",
@@ -68,4 +65,28 @@ def profile_pic_embed(profile):
         colour=Colour.random(),
     )
     embed.set_image(url=profile.profileImage)
+    return embed
+
+
+def profile_bio_embed(profile):
+    embed = Embed(
+        title=profile.username,
+        colour=Colour.random(),
+    )
+    try:
+        embed.set_image(url=profile.profileImage)
+    except:
+        pass
+    try:
+        embed.set_author(
+            name=profile.firstName + " " + profile.lastName,
+            url=create_profile_link(profile.username),
+            icon_url=profile.profileImage,
+        )
+    except:
+        pass
+    if len(profile.profileBio)<=1024:
+        embed.add_field(name="Profile Bio", value=profile.profileBio)
+    else:
+        return None
     return embed
