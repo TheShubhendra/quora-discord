@@ -19,6 +19,10 @@ def profile_embed(profile):
         )
     except:
         pass
+    embed.add_field(
+        name="Profile Bio",
+        value=profile.profileBio,
+    )
     try:
         embed.add_field(
             name="Views",

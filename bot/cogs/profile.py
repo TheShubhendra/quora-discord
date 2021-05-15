@@ -70,12 +70,13 @@ class Profile(commands.Cog):
             )
             return
         except Exception as e:
-            await ctx.reply("```\n"+e+"\n```")
+            await ctx.reply("```\n" + e + "\n```")
             return
         try:
             await ctx.send(embed=profile_embed(profile))
         except Exception as e:
             await ctx.reply(e)
+
     @commands.command(aliases=["picture", "pfp", "dp"])
     async def pic(self, ctx, args=None):
         """Show the profile picture of Quora profile."""
