@@ -104,7 +104,7 @@ def answers_embed(profile, answers):
             value=(
                 str(answer) + f"[Read here]({answer.url})"
                 if len(str(answer)) < 200
-                else str(answer)[:200] + f".....[Read more]({answer.question.url})"
+                else str(answer)[:200] + f".....[Read more]({answer.url})"
             ),
         )
     try:
