@@ -85,8 +85,38 @@ def profile_bio_embed(profile):
         )
     except:
         pass
-    if len(profile.profileBio)<=1024:
+    if len(profile.profileBio) <= 1024:
         embed.add_field(name="Profile Bio", value=profile.profileBio)
     else:
         return None
+    return embed
+
+
+def answers_embed(profile, answers):
+    embed = Embed(
+        title=profile.username,
+        colour=Colour.random(),
+    )
+
+    for answer in answers:
+        embed.add_field(
+            name=str(answer.question),
+            value=(
+                str(answer) + f"[Read here]({answer.url})"
+                if len(str(answer)) < 200
+                else str(answer)[:200] + f".....[Read more]({answer.question.url})"
+            ),
+        )
+    try:
+        embed.set_thumbnail(url=str(profile.profileImage))
+    except:
+        pas
+    try:
+        embed.set_author(
+            name=profile.firstName + " " + profile.lastName,
+            url=create_profile_link(profile.username),
+            icon_url=profile.profileImage,
+        )
+    except:
+        pass
     return embed

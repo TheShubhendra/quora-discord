@@ -1,5 +1,10 @@
 from .parser import extract_quora_username, create_profile_link
-from .embeds import profile_embed, profile_pic_embed, profile_bio_embed
+from .embeds import (
+    profile_embed,
+    profile_pic_embed,
+    profile_bio_embed,
+    answers_embed,
+)
 
 __all__ = [
     extract_quora_username,
@@ -7,4 +12,5 @@ __all__ = [
     profile_pic_embed,
     create_profile_link,
     profile_bio_embed,
+    answers_embed,
 ]

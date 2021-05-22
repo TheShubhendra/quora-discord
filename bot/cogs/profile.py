@@ -8,6 +8,7 @@ from bot.utils import (
     profile_embed,
     profile_pic_embed,
     profile_bio_embed,
+    answers_embed,
 )
 
 
@@ -117,6 +118,24 @@ class Profile(commands.Cog):
             await ctx.send(embed=embed)
         else:
             await ctx.send("```\n" + profile.profileBio + "\n```")
+
+    @commands.command()
+    async def answers(self, ctx, args=None):
+        """Shows pinned and recent answers."""
+        if self._session is None:
+            await self._create_session()
+        quora_username = await self.get_username(ctx, args)
+        if quora_username is None:
+            return
+        user = User(quora_username, session=self._session)
+        try:
+            profile = await user.profile()
+            answers = await user.answers()
+
+            embed = answers_embed(profile, answers)
+            await ctx.reply(embed=embed)
+        except Exception as e:
+            await ctx.reply("```\n" + str(e) + "\n```")
 
 
 def setup(bot):
