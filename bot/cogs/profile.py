@@ -55,7 +55,7 @@ class Profile(commands.Cog):
             quora_username = api.get_quora_username(ctx.author.id)
         return quora_username
 
-    @commands.command()
+    @commands.command(aliases=["p"])
     async def profile(self, ctx, quora_username=None):
         """Gives details of any Quora profile."""
         if self._session is None:
@@ -119,7 +119,7 @@ class Profile(commands.Cog):
         else:
             await ctx.send("```\n" + profile.profileBio + "\n```")
 
-    @commands.command()
+    @commands.command(aliases=["a"])
     async def answers(self, ctx, args=None):
         """Shows pinned and recent answers."""
         if self._session is None:
