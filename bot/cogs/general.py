@@ -1,7 +1,6 @@
 from discord.ext import commands
 import discord
-INVITE_LINK = "https://discord.com/api/oauth2/authorize?client_id=838250557805821992&permissions=8&scope=bot"
-
+INVITE_LINK = "https://discord.com/api/oauth2/authorize?client_id=838250557805821992&permissions=2147765312&scope=bot"
 
 class General(commands.Cog):
     def __init__(self, bot):
