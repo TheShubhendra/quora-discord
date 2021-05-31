@@ -12,18 +12,18 @@ from . import (
 
 class Watcher(BASE):
     __tablename__ = "watcher_data"
-    guild_name = Column(String(50), primary_key=True)
-    discord_username = Column(String(50))
+    guild_id = Column(String(50), primary_key=True)
+    user_id = Column(String(50))
     quora_username = Column(String(50))
 
     def __init__(
         self,
         guild_id,
-        discord_username,
+        user_id,
         quora_username,
     ):
         self.guild_id = guild_id
-        self.discord_username = discord_username
+        self.user_id = user_id
         self.quora_username = quora_username
 
 
@@ -34,7 +34,7 @@ def get_guild_watcher(guild_id):
     return SESSION.query(Watcher).get(str(guild_id))
 
 
-def add_watcher(guild_id, discord_username, quora_username):
-    watcher = Watcher(guild_name, discord_username, quora_username)
+def add_watcher(guild_id, user_id, quora_username):
+    watcher = Watcher(guild_id, user_id, quora_username)
     SESSION.add(watcher)
     SESSION.commit()
