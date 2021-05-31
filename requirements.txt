@@ -3,3 +3,4 @@ python-decouple
 git+ssh://git@github.com/TheShubhendra/pyquora.git@0.1.0#egg=pyquora
 sqlalchemy==1.3.22
 psycopg2
+profile-watcher==0.0.2
