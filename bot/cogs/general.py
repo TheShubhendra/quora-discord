@@ -1,7 +1,9 @@
 from discord.ext import commands
 import discord
 
-INVITE_LINK = "https://discord.com/api/oauth2/authorize?client_id=838250557805821992&permissions=2147765312&scope=bot"
+BOT_INVITE_LINK = "https://discord.com/api/oauth2/authorize?client_id=838250557805821992&permissions=2147765312&scope=bot"
+
+SERVER_INVITE_LINK = "https://discord.gg/SEnqh73qYj"
 
 
 class General(commands.Cog):
@@ -22,7 +24,12 @@ class General(commands.Cog):
     @commands.command()
     async def invite(self, ctx):
         """Invites bot to your server."""
-        await ctx.send(INVITE_LINK)
+        await ctx.send(BOT_INVITE_LINK)
+
+    @commands.command()
+    async def server(self, ctx):
+        """Sends link of support server"""
+        await ctx.send(SERVER_INVITE_LINK)
 
 
 def setup(bot):
