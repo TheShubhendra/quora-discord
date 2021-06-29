@@ -120,3 +120,15 @@ def answers_embed(profile, answers):
     except:
         pass
     return embed
+
+
+def dev_embed():
+    embed = Embed(
+        title = "My Developer",
+        colour = Colour.random(),
+        )
+    embed.add_field(
+        name = "Shubendra Kushwaha",
+        value = "https://github.com/TheShubhendra",
+        )
+    return embed

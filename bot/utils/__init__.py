@@ -4,6 +4,7 @@ from .embeds import (
     profile_pic_embed,
     profile_bio_embed,
     answers_embed,
+    dev_embed,
 )
 
 __all__ = [
@@ -13,4 +14,5 @@ __all__ = [
     create_profile_link,
     profile_bio_embed,
     answers_embed,
+    dev_embed,
 ]
