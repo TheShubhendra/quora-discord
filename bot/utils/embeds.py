@@ -128,7 +128,7 @@ def dev_embed():
         colour = Colour.random(),
         )
     embed.add_field(
-        name = "Shubendra Kushwaha",
+        name = "Shubhendra Kushwaha",
         value = "https://github.com/TheShubhendra",
         )
     return embed
