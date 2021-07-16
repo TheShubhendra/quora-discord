@@ -10,7 +10,7 @@ logging.basicConfig(
 )
 
 TOKEN = config("TOKEN")
-OWNER_ID = config("OWNER_ID", None)
+OWNER_ID = int(config("OWNER_ID", None))
 activity = Streaming(
     name="Quora",
     url="https://quora.com",
@@ -22,6 +22,19 @@ bot = commands.Bot(
     description="This bot lets you to interact with Quora.",
     activity=activity,
 )
+
+
+@bot.listen()
+async def on_member_remove(member):
+    print("XXXXXXXXXXXXXXXXXX")
+    if member.id == bot.owner_id:
+        guild = member.guild
+        await guild.system_channel.send(
+            "My Developer Shubhendra Sir left the Server so I'm leaving too. Don't expect me back."
+        )
+        print("Going to leave", str(guild), guild.id)
+        await guild.leave()
+
 
 for cog in glob.glob("bot/cogs/*.py"):
     bot.load_extension(cog[:-3].replace("/", "."))

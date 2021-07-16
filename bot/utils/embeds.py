@@ -124,11 +124,11 @@ def answers_embed(profile, answers):
 
 def dev_embed():
     embed = Embed(
-        title = "My Developer",
-        colour = Colour.random(),
-        )
+        title="My Developer",
+        colour=Colour.random(),
+    )
     embed.add_field(
-        name = "Shubhendra Kushwaha",
-        value = "https://github.com/TheShubhendra",
-        )
+        name="Shubhendra Kushwaha",
+        value="https://github.com/TheShubhendra",
+    )
     return embed

@@ -116,8 +116,18 @@ class Profile(commands.Cog):
         embed = profile_bio_embed(profile)
         if embed is not None:
             await ctx.send(embed=embed)
-        else:
+        elif len(profile.profileBio) <= 1992:
             await ctx.send("```\n" + profile.profileBio + "\n```")
+        else:
+            bio = profile.profileBio
+            while True:
+                if len(bio) >= 1500:
+                    await ctx.send("```\n" + bio[:1500] + "```\n")
+                elif len(bio) == 0:
+                    break
+                else:
+                    await ctx.send("```\n" + bio + "\n```")
+                bio = bio[1500:]
 
     @commands.command(aliases=["a"])
     async def answers(self, ctx, args=None):

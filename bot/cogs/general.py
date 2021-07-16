@@ -37,6 +37,7 @@ class General(commands.Cog):
         """Tells about developer"""
         await ctx.send(embed=dev_embed())
 
+
 def setup(bot):
     x = General(bot)
     bot.add_cog(x)
