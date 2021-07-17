@@ -72,7 +72,7 @@ class Profile(commands.Cog):
             )
             return
         except Exception as e:
-            await ctx.reply("```\n" + e + "\n```")
+            await ctx.reply("```\n" + str(e) + "\n```")
             return
         try:
             await ctx.send(embed=profile_embed(profile))
