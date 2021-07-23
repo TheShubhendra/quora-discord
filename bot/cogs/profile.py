@@ -28,6 +28,11 @@ class Profile(commands.Cog):
             await ctx.reply("Username or profile link is not valid")
             return
         try:
+            _ = await User(username).profile()
+        except:
+            await ctx.reply("Username or profile link is not valid")
+            return
+        try:
             api.add_user(
                 ctx.author.id,
                 ctx.author.name,
