@@ -37,7 +37,7 @@ BASE.metadata.create_all(ENGINE)
 
 def does_user_exist(discord_id):
     return (
-        SESSION.query(Quoran).filter(Quoran.discord_id == str(discord_id)).first()
+        SESSION.query(Quoran).filter(Quoran.discord_id == str(discord_id)).filter(Quoran.access!="none").first()
         is not None
     )
 
