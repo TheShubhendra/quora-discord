@@ -66,3 +66,9 @@ def add_user(discord_id, discord_username, quora_username, access = None):
 def get_quora_username(discord_id):
     quoran = SESSION.query(Quoran).get(str(discord_id))
     return quoran.quora_username
+
+
+def update_access(discord_id, access):
+    quoran = SESSION.query(Quoran).get(str(discord_id))
+    quoran.access = access
+    SESSION.commit()
