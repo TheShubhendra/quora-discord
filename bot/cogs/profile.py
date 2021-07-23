@@ -39,6 +39,15 @@ class Profile(commands.Cog):
         except:
             await ctx.reply("An unknown error occurred.")
 
+    @commands.command()
+    async def remove(self, ctx):
+        """Remove your Quora profile from bot."""
+        if api.does_user_exist(ctx.author.id):
+            api.update_access(ctx.author.id, "none")
+            await ctx.reply("Profile removed successfully.")
+        else:
+            await ctx.reply("No linked profile found.")
+
     async def get_username(self, ctx, quora_username=None):
         if len(ctx.message.mentions) > 0:
             discord_id = ctx.message.mentions[0].id
