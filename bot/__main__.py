@@ -3,6 +3,7 @@ from discord import Streaming
 from decouple import config
 import logging
 import glob
+from .utils.embeds import bot_help_embed
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(message)s",
@@ -11,16 +12,30 @@ logging.basicConfig(
 
 TOKEN = config("TOKEN")
 OWNER_ID = int(config("OWNER_ID", None))
+
+
 activity = Streaming(
     name="Quora",
     url="https://quora.com",
 )
+
+
+class QuoraHelpCommand(commands.HelpCommand):
+    def __init__(self):
+        super().__init__()
+ 
+    async def send_bot_help(self, mapping):
+        embed = bot_help_embed(mapping)
+        await self.context.send(embed=embed)
+
+
 bot = commands.Bot(
     command_prefix="q!",
     owner_id=OWNER_ID,
     strip_after_prefix=True,
     description="This bot lets you to interact with Quora.",
     activity=activity,
+    help_command=QuoraHelpCommand(),
 )
 
 

@@ -132,3 +132,21 @@ def dev_embed():
         value="https://github.com/TheShubhendra",
     )
     return embed
+
+
+def bot_help_embed(mapping, prefix="q!"):
+    embed = Embed(
+        title="Quora Bot Help",
+        colour=Colour.from_rgb(255,0,0),
+        )
+    for cog, commands in mapping.items():
+        if commands is None:
+            continue
+        cmd_str = ""
+        for command in commands:
+            cmd_str+= f"{prefix}{command.qualified_name} - {command.short_doc}\n"
+        embed.add_field(
+            name=getattr(cog, "qualified_name", "Other"),
+            value=cmd_str,
+            )
+    return embed
