@@ -28,8 +28,14 @@ class QuoraHelpCommand(commands.HelpCommand):
         embed = bot_help_embed(mapping)
         await self.context.send(embed=embed)
 
+class QuoraBot(commands.Bot):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+    
+    async def on_command_error(self, ctx, exception):
+        await ctx.send(exception)
 
-bot = commands.Bot(
+bot = QuoraBot(
     command_prefix="q!",
     owner_id=OWNER_ID,
     strip_after_prefix=True,
