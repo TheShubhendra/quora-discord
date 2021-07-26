@@ -113,6 +113,10 @@ class Profile(commands.Cog):
         )
     async def pic(self, ctx, args=None):
         """Show the profile picture of Quora profile."""
+        if ctx.author.id == 769883434977067019:
+            await ctx.send("Chal bhaag Meeta")
+            return
+
         if self._session is None:
             await self._create_session()
         quora_username = await self.get_username(ctx, args)
