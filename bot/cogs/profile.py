@@ -20,7 +20,10 @@ class Profile(commands.Cog):
     async def _create_session(self):
         self._session = ClientSession()
 
-    @commands.command()
+    @commands.command(
+        usage="q!setprofile Shubhendra-Kushwaha-1\nor q!setprofile https://www.quora.com/profile/Shubhendra-Kushwaha-1",
+        help="Use this command to link your quora profile with this bot\nUsage: q!setprofile <Quora username or profile link>",
+        )
     async def setprofile(self, ctx, quora_username_or_profile_link):
         """Links your Quora profile."""
         username = extract_quora_username(quora_username_or_profile_link)
