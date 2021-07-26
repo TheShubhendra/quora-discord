@@ -6,7 +6,7 @@ class Embed(Embed):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.set_footer(
-            text="Send q!help to know about all commands or type q!help <command> for help for specific command."
+            text="Send q!help to know about the commands or type q!help <command> for help for specific command."
         )
 
 
