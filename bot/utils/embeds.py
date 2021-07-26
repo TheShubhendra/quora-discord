@@ -1,14 +1,17 @@
 from discord import Embed, Colour
 from bot.utils import create_profile_link
 
-
+class Embed(Embed):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.set_footer(
+            text = "Send q!help to know about all commands or type q!help <command> for help for specific command."
+            )
 def profile_embed(profile):
     embed = Embed(
         title=profile.username,
         colour=Colour.random(),
     )
-    # for i,j in vars(profile).items():
-    # embed.add_field(name=i, value=j)
     embed.set_thumbnail(url=str(profile.profileImage))
     try:
         embed.add_field(
