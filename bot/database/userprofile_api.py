@@ -17,13 +17,7 @@ class Quoran(BASE):
     quora_username = Column(String(50))
     access = Column(String(10))
 
-    def __init__(
-        self,
-        discord_id,
-        discord_username,
-        quora_username,
-        access = None
-    ):
+    def __init__(self, discord_id, discord_username, quora_username, access=None):
         self.discord_id = discord_id
         self.discord_username = discord_username
         self.quora_username = quora_username
@@ -35,10 +29,13 @@ class Quoran(BASE):
 BASE.metadata.create_all(ENGINE)
 
 
-def does_user_exist(discord_id, check_hidden = False):
+def does_user_exist(discord_id, check_hidden=False):
     if not check_hidden:
         return (
-            SESSION.query(Quoran).filter(Quoran.discord_id == str(discord_id)).filter(Quoran.access!="none").first()
+            SESSION.query(Quoran)
+            .filter(Quoran.discord_id == str(discord_id))
+            .filter(Quoran.access != "none")
+            .first()
             is not None
         )
     else:
@@ -54,8 +51,8 @@ def delete_user(discord_id):
     SESSION.commit()
 
 
-def add_user(discord_id, discord_username, quora_username, access = None):
-    if does_user_exist(discord_id, check_hidden = True):
+def add_user(discord_id, discord_username, quora_username, access=None):
+    if does_user_exist(discord_id, check_hidden=True):
         delete_user(discord_id)
     if access is None:
         access = "public"

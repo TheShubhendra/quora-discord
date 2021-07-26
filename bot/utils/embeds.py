@@ -1,12 +1,15 @@
 from discord import Embed, Colour
 from bot.utils import create_profile_link
 
+
 class Embed(Embed):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.set_footer(
-            text = "Send q!help to know about all commands or type q!help <command> for help for specific command."
-            )
+            text="Send q!help to know about all commands or type q!help <command> for help for specific command."
+        )
+
+
 def profile_embed(profile):
     embed = Embed(
         title=profile.username,
@@ -138,16 +141,13 @@ def dev_embed():
 
 
 def help_embed(title="Quora Bot Help"):
-    embed = Embed(
-        title=title,
-        colour=Colour.from_rgb(255,0,0)
-        )
+    embed = Embed(title=title, colour=Colour.from_rgb(255, 0, 0))
     embed.set_author(
         name="Quora",
         icon_url="https://cdn.discordapp.com/avatars/838250557805821992/cd60e572bded2f16ea97dff916da481c.png?size=256",
-        )
+    )
     return embed
-    
+
 
 def bot_help_embed(mapping, prefix="q!"):
     embed = help_embed()
@@ -158,23 +158,23 @@ def bot_help_embed(mapping, prefix="q!"):
             continue
         cmd_str = ""
         for command in commands:
-            cmd_str+= f"{prefix}{command.qualified_name} - {command.short_doc}\n"
+            cmd_str += f"{prefix}{command.qualified_name} - {command.short_doc}\n"
         embed.add_field(
             name=getattr(cog, "qualified_name", "Other"),
             value=cmd_str,
-            )
+        )
     return embed
 
 
 def command_help_embed(command, prefix="q!"):
-    embed = help_embed(title = f"{command.qualified_name} command help")
+    embed = help_embed(title=f"{command.qualified_name} command help")
     embed.add_field(
-        name = f"Help",
-        value = command.help if command.help else command.short_doc,
-        )
+        name=f"Help",
+        value=command.help if command.help else command.short_doc,
+    )
     if command.usage is not None:
         embed.add_field(
             name="Example",
-            value=command.usage ,
-            )
+            value=command.usage,
+        )
     return embed

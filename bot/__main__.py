@@ -6,7 +6,7 @@ import glob
 from .utils.embeds import (
     bot_help_embed,
     command_help_embed,
-    )
+)
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(message)s",
@@ -26,7 +26,7 @@ activity = Streaming(
 class QuoraHelpCommand(commands.HelpCommand):
     def __init__(self):
         super().__init__()
- 
+
     async def send_bot_help(self, mapping):
         embed = bot_help_embed(mapping)
         await self.context.send(embed=embed)
@@ -35,12 +35,14 @@ class QuoraHelpCommand(commands.HelpCommand):
         destination = self.get_destination()
         await destination.send(embed=command_help_embed(command))
 
+
 class QuoraBot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-    
+
     async def on_command_error(self, ctx, exception):
         await ctx.send(exception)
+
 
 bot = QuoraBot(
     command_prefix="q!",
