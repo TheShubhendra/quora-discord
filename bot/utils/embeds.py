@@ -152,7 +152,9 @@ def help_embed(title="Quora Bot Help"):
 def bot_help_embed(mapping, prefix="q!"):
     embed = help_embed()
     for cog, commands in mapping.items():
-        if commands is None:
+        if commands is None or len(commands) < 1:
+            continue
+        if getattr(cog, "qualified_name", "") == "Admin":
             continue
         cmd_str = ""
         for command in commands:

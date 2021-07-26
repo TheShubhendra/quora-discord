@@ -4,3 +4,4 @@ git+https://github.com/TheShubhendra/pyquora.git
 sqlalchemy==1.3.22
 psycopg2
 profile-watcher==0.0.2
+heroku3
