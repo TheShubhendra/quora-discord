@@ -5,6 +5,7 @@ from .embeds import (
     profile_bio_embed,
     answers_embed,
     dev_embed,
+    knows_about_embed,
 )
 
 __all__ = [
@@ -15,4 +16,5 @@ __all__ = [
     profile_bio_embed,
     answers_embed,
     dev_embed,
+    knows_about_embed,
 ]

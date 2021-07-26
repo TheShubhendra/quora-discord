@@ -178,3 +178,29 @@ def command_help_embed(command, prefix="q!"):
             value=command.usage,
         )
     return embed
+
+
+def knows_about_embed(profile, knows_about):
+    embed = Embed(
+        title=profile.username,
+        colour=Colour.random(),
+    )
+
+    for topic in knows_about:
+        embed.add_field(
+            name=topic.name,
+            value=f"[{str(topic.userAnswersCount)} answers by {profile.firstName}]({topic.userAnswersUrl}) on **[{topic.name}]({topic.url})** (Followed by {topic.followerCount})",
+        )
+    try:
+        embed.set_thumbnail(url=str(profile.profileImage))
+    except:
+        pas
+    try:
+        embed.set_author(
+            name=profile.firstName + " " + profile.lastName,
+            url=create_profile_link(profile.username),
+            icon_url=profile.profileImage,
+        )
+    except:
+        pass
+    return embed

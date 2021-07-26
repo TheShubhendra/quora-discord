@@ -9,6 +9,7 @@ from bot.utils import (
     profile_pic_embed,
     profile_bio_embed,
     answers_embed,
+    knows_about_embed,
 )
 
 
@@ -188,6 +189,28 @@ class Profile(commands.Cog):
             answers = await user.answers()
 
             embed = answers_embed(profile, answers)
+            await ctx.reply(embed=embed)
+        except Exception as e:
+            await ctx.reply("```\n" + str(e) + "\n```")
+
+    @commands.command(
+        aliases=["knows_about", "k"],
+        help="Get top few topics on which user has written most of the answers.",
+        usage="q!knows \nq!knows Shubhendra-Kushwaha-1\nq!knows <@72863363373337>",
+        brief="Fetch knows about section.",
+    )
+    async def knows(self, ctx, args=None):
+        if self._session is None:
+            await self._create_session()
+        quora_username = await self.get_username(ctx, args)
+        if quora_username is None:
+            return
+        user = User(quora_username, session=self._session)
+        try:
+            profile = await user.profile()
+            knows_about = await user.knows_about()
+
+            embed = knows_about_embed(profile, knows_about)
             await ctx.reply(embed=embed)
         except Exception as e:
             await ctx.reply("```\n" + str(e) + "\n```")
