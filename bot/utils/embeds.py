@@ -134,11 +134,16 @@ def dev_embed():
     return embed
 
 
-def bot_help_embed(mapping, prefix="q!"):
+def help_embed():
     embed = Embed(
         title="Quora Bot Help",
-        colour=Colour.from_rgb(255,0,0),
+        colour=Colour.from_rgb(255,0,0)
         )
+    return embed
+    
+
+def bot_help_embed(mapping, prefix="q!"):
+    embed = help_embed()
     for cog, commands in mapping.items():
         if commands is None:
             continue
@@ -148,5 +153,19 @@ def bot_help_embed(mapping, prefix="q!"):
         embed.add_field(
             name=getattr(cog, "qualified_name", "Other"),
             value=cmd_str,
+            )
+    return embed
+
+
+def command_help_embed(command, prefix="q!"):
+    embed = help_embed()
+    embed.add_field(
+        name = f"{command.qualified_name}",
+        value = command.help if command.help else command.short_doc,
+        )
+    if command.usage is not None:
+        embed.add_field(
+            name="Example",
+            value=command.usage ,
             )
     return embed

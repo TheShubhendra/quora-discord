@@ -3,7 +3,10 @@ from discord import Streaming
 from decouple import config
 import logging
 import glob
-from .utils.embeds import bot_help_embed
+from .utils.embeds import (
+    bot_help_embed,
+    command_help_embed,
+    )
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(message)s",
@@ -27,6 +30,10 @@ class QuoraHelpCommand(commands.HelpCommand):
     async def send_bot_help(self, mapping):
         embed = bot_help_embed(mapping)
         await self.context.send(embed=embed)
+
+    async def send_command_help(self, command):
+        destination = self.get_destination()
+        await destination.send(embed=command_help_embed(command))
 
 class QuoraBot(commands.Bot):
     def __init__(self, *args, **kwargs):
