@@ -134,10 +134,14 @@ def dev_embed():
     return embed
 
 
-def help_embed():
+def help_embed(title="Quora Bot Help"):
     embed = Embed(
-        title="Quora Bot Help",
+        title=title,
         colour=Colour.from_rgb(255,0,0)
+        )
+    embed.set_author(
+        name="Quora",
+        icon_url="https://cdn.discordapp.com/avatars/838250557805821992/cd60e572bded2f16ea97dff916da481c.png?size=256",
         )
     return embed
     
@@ -158,9 +162,9 @@ def bot_help_embed(mapping, prefix="q!"):
 
 
 def command_help_embed(command, prefix="q!"):
-    embed = help_embed()
+    embed = help_embed(title = f"{command.qualified_name} command help")
     embed.add_field(
-        name = f"{command.qualified_name}",
+        name = f"Help",
         value = command.help if command.help else command.short_doc,
         )
     if command.usage is not None:

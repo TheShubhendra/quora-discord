@@ -47,7 +47,9 @@ class Profile(commands.Cog):
         except:
             await ctx.reply("An unknown error occurred.")
 
-    @commands.command()
+    @commands.command(
+        help = "Use this command to remove your linked Quora profile with this bot."
+        )
     async def remove(self, ctx):
         """Remove your Quora profile from bot."""
         if api.does_user_exist(ctx.author.id):
@@ -72,7 +74,11 @@ class Profile(commands.Cog):
             quora_username = api.get_quora_username(ctx.author.id)
         return quora_username
 
-    @commands.command(aliases=["p"])
+    @commands.command(
+        aliases=["p"],
+        help = "Use this command to fetch a Quora profile.\n**Usage**\n1. q!profile\n2. q!profile <mention someone>.\n3. q!profile <Username of the quoran.",
+        usage = "q!profile\nq!profile Shubhendra-Kushwaha-1\nq!profile <@72863363373337>",
+    )
     async def profile(self, ctx, quora_username=None):
         """Gives details of any Quora profile."""
         if self._session is None:
