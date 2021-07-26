@@ -23,6 +23,7 @@ class Profile(commands.Cog):
     @commands.command(
         usage="q!setprofile Shubhendra-Kushwaha-1\nor q!setprofile https://www.quora.com/profile/Shubhendra-Kushwaha-1",
         help="Use this command to link your quora profile with this bot\nUsage: q!setprofile <Quora username or profile link>",
+        brief = "Links your Quora profile.",
         )
     async def setprofile(self, ctx, quora_username_or_profile_link):
         """Links your Quora profile."""
@@ -48,7 +49,8 @@ class Profile(commands.Cog):
             await ctx.reply("An unknown error occurred.")
 
     @commands.command(
-        help = "Use this command to remove your linked Quora profile with this bot."
+        help = "Use this command to remove your linked Quora profile with this bot.",
+        brief = "Unlink your Quora profile.",
         )
     async def remove(self, ctx):
         """Remove your Quora profile from bot."""
@@ -78,6 +80,7 @@ class Profile(commands.Cog):
         aliases=["p"],
         help = "Use this command to fetch a Quora profile.\n**Usage**\n1. q!profile\n2. q!profile <mention someone>.\n3. q!profile <Username of the quoran.",
         usage = "q!profile\nq!profile Shubhendra-Kushwaha-1\nq!profile <@72863363373337>",
+        brief = "Fetch a Quora profile.",
     )
     async def profile(self, ctx, quora_username=None):
         """Gives details of any Quora profile."""
@@ -102,7 +105,12 @@ class Profile(commands.Cog):
         except Exception as e:
             await ctx.reply(e)
 
-    @commands.command(aliases=["picture", "pfp", "dp"])
+    @commands.command(
+        aliases=["picture", "pfp", "dp"],
+        help = "Use this command to fetch a Quora profile.\n**Usage**\n1. q!pic\n2. q!profile <mention someone>.\n3. q!pic <Username of the quoran.",
+        usage = "q!pic\nq!pic Shubhendra-Kushwaha-1\nq!pic <@72863363373337>",
+        brief = "Fetch profile picture of a Quora profile.",
+        )
     async def pic(self, ctx, args=None):
         """Show the profile picture of Quora profile."""
         if self._session is None:
@@ -120,7 +128,12 @@ class Profile(commands.Cog):
             return
         await ctx.send(embed=profile_pic_embed(profile))
 
-    @commands.command(aliases=["profileBio", "intro"])
+    @commands.command(
+        aliases=["profileBio", "intro"],
+        help = "Use this command to fetch a Quora profile.\n**Usage**\n1. q!bio\n2. q!bio <mention someone>.\n3. q!bio <Username of the quoran.",
+        usage = "q!bio\nq!bio Shubhendra-Kushwaha-1\nq!bio <@72863363373337>",
+        brief = "Fetch the profile bio of a Quora profile",
+        )
     async def bio(self, ctx, args=None):
         """Show the profile bio of Quora user."""
         if self._session is None:
@@ -152,7 +165,12 @@ class Profile(commands.Cog):
                     await ctx.send("```\n" + bio + "\n```")
                 bio = bio[1500:]
 
-    @commands.command(aliases=["a"])
+    @commands.command(
+        aliases=["a"],
+        help = "Use this command to fetch a Quora profile.\n**Usage**\n1. q!answers\n2. q!answers <mention someone>.\n3. q!answers<Username of the quoran.",
+        usage = "q!answers\nq!answers Shubhendra-Kushwaha-1\nq!profile <@72863363373337>",
+        brief = "Fetch pinned and recent answers",
+        )
     async def answers(self, ctx, args=None):
         """Shows pinned and recent answers."""
         if self._session is None:
