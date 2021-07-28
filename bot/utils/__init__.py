@@ -6,6 +6,10 @@ from .embeds import (
     answers_embed,
     dev_embed,
     knows_about_embed,
+    Embed,
+)
+from .misc import (
+    count_file_and_lines,
 )
 
 __all__ = [
@@ -17,4 +21,5 @@ __all__ = [
     answers_embed,
     dev_embed,
     knows_about_embed,
+    count_file_and_lines,
 ]
