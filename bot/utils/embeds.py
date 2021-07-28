@@ -212,7 +212,7 @@ def knows_about_embed(profile, knows_about):
 
 def stats_embed(bot):
     all_tasks = asyncio.tasks.all_tasks()
-    files, lines = count(".")
+    files, lines = count("./bot")
     embed = Embed(
         name="Quora Bot Status",
         colour=Colour.random(),
