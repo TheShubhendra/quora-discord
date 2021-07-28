@@ -3,6 +3,7 @@ from discord import Streaming
 from decouple import config
 import logging
 import glob
+import time
 from .utils.embeds import (
     bot_help_embed,
     command_help_embed,
@@ -39,9 +40,13 @@ class QuoraHelpCommand(commands.HelpCommand):
 class QuoraBot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.startTime = time.time()
 
     async def on_command_error(self, ctx, exception):
         await ctx.send(exception)
+
+    def up_time(self):
+        return time.time() - self.startTime
 
 
 bot = QuoraBot(
