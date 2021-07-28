@@ -1,4 +1,5 @@
 import asyncio
+import subprocess
 from discord.ext import commands
 import discord
 from bot.utils import dev_embed, Embed, stats_embed, count_file_and_lines as count
@@ -44,6 +45,20 @@ class General(commands.Cog):
     async def stats(self, ctx):
         """Bot status."""
         await ctx.send(embed=stats_embed(self.bot))
+
+    @commands.command(aliases=["lib"])
+    async def libraries(self, ctx):
+        """Installed Python libraries ."""
+        libs = subprocess.check_output(["pip", "freeze"]).decode("ascii")
+        embed = Embed(
+            title="Python libraries",
+            colour=discord.Colour.blue(),
+        )
+        embed.add_field(
+            name="Libraries",
+            value=libs,
+        )
+        await ctx.send(embed=embed)
 
 
 def setup(bot):
