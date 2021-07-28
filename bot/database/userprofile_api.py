@@ -9,6 +9,11 @@ from . import (
     SESSION,
 )
 
+from decouple import config
+
+
+CREATE_TABLES = bool(int(config("CREATE_TABLES", 1)))
+
 
 class Quoran(BASE):
     __tablename__ = "quoran"
@@ -26,7 +31,8 @@ class Quoran(BASE):
         self.access = access
 
 
-BASE.metadata.create_all(ENGINE)
+if CREATE_TABLES:
+    BASE.metadata.create_all(ENGINE)
 
 
 def does_user_exist(discord_id, check_hidden=False):
@@ -75,3 +81,7 @@ def update_access(discord_id, access):
     quoran = SESSION.query(Quoran).get(str(discord_id))
     quoran.access = access
     SESSION.commit()
+
+
+def profile_count():
+    return SESSION.query(Quoran).count()
