@@ -1,5 +1,7 @@
 import sys
 import asyncio
+import pip
+import discord
 from discord import Embed, Colour
 from bot.utils import create_profile_link
 from .misc import count_file_and_lines as count
@@ -235,6 +237,6 @@ def stats_embed(bot):
     version = sys.version_info
     embed.add_field(
         name="Versions",
-        value=f"**Python:** {version.major}.{version.minor}.{version.micro}",
+        value=f"**Python:** {version.major}.{version.minor}.{version.micro}\n**discord.py:** {discord.__version__}\n**pip:** {pip.__version__}",
     )
     return embed
