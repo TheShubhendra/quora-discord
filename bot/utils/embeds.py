@@ -1,5 +1,9 @@
+import sys
+import asyncio
 from discord import Embed, Colour
 from bot.utils import create_profile_link
+from .misc import count_file_and_lines as count
+from bot.database.userprofile_api import profile_count
 
 
 class Embed(Embed):
@@ -203,4 +207,34 @@ def knows_about_embed(profile, knows_about):
         )
     except:
         pass
+    return embed
+
+
+def stats_embed(bot):
+    all_tasks = asyncio.tasks.all_tasks()
+    files, lines = count(".")
+    embed = Embed(
+        name="Quora Bot Status",
+        colour=Colour.random(),
+    )
+    embed.add_field(
+        name="Basic Stats",
+        value=f"**Server Connected:** {len(bot.guilds)}\n**User Connected:** {len(bot.users)}\n**Total Commands:** {len(bot.commands)}\n**Linked profiles:** {profile_count()}",
+    )
+
+    embed.add_field(
+        name="Program info",
+        value=f"**Active Tasks:** {len(all_tasks)}\n**Uptime:** {bot.up_time()} second\n**Latency:** {bot.latency*10000} ms",
+    )
+
+    embed.add_field(
+        name="Code Info",
+        value=f"**Total files:** {files}\n**Code length:** {lines} lines",
+    )
+
+    version = sys.version_info
+    embed.add_field(
+        name="Versions",
+        value=f"**Python:** {version.major}.{version.minor}.{version.micro}",
+    )
     return embed
