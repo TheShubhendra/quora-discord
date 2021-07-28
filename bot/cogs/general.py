@@ -1,6 +1,9 @@
+import asyncio
 from discord.ext import commands
 import discord
-from bot.utils.embeds import dev_embed
+from bot.utils import dev_embed, Embed, stats_embed, count_file_and_lines as count
+from bot.database import userprofile_api as api
+
 
 BOT_INVITE_LINK = "https://discord.com/api/oauth2/authorize?client_id=838250557805821992&permissions=2147765312&scope=bot"
 
@@ -36,6 +39,11 @@ class General(commands.Cog):
     async def developer(self, ctx):
         """Tells about developer"""
         await ctx.send(embed=dev_embed())
+
+    @commands.command(aliases=["status"])
+    async def stats(self, ctx):
+        """Bot status."""
+        await ctx.send(embed=stats_embed(self.bot))
 
 
 def setup(bot):
