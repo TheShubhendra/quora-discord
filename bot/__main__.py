@@ -8,6 +8,7 @@ from .utils.embeds import (
     bot_help_embed,
     command_help_embed,
 )
+from watcher import Watcher
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(message)s",
@@ -40,6 +41,7 @@ class QuoraHelpCommand(commands.HelpCommand):
 class QuoraBot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.watcher = Watcher()
         self.startTime = time.time()
 
     async def on_command_error(self, ctx, exception):

@@ -37,17 +37,17 @@ class Profile(commands.Cog):
         except:
             await ctx.reply("Username or profile link is not valid")
             return
-        try:
+        if api.does_user_exist(str(ctx.author.id), check_hidden=True):
+            api.update_username(str(ctx.author.id), username)
+        else:
             api.add_user(
                 ctx.author.id,
                 ctx.author.name,
                 username,
             )
-            await ctx.reply(
-                f"Your username {username} has been successfully updated in the database."
-            )
-        except:
-            await ctx.reply("An unknown error occurred.")
+        await ctx.reply(
+            f"Your username {username} has been successfully updated in the database."
+        )
 
     @commands.command(
         help="Use this command to remove your linked Quora profile with this bot.",
