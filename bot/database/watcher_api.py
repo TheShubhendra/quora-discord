@@ -31,7 +31,7 @@ BASE.metadata.create_all(ENGINE)
 
 
 def get_guild_watcher(guild_id):
-    return SESSION.query(Watcher).get(str(guild_id))
+    return SESSION.query(Watcher).get(str(guild_id)).all()
 
 
 def add_watcher(guild_id, user_id, quora_username):
