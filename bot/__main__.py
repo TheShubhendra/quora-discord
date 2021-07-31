@@ -9,6 +9,10 @@ from .utils.embeds import (
     command_help_embed,
 )
 from watcher import Watcher
+from .database import watcher_api as wapi
+from .database import userprofile_api as uapi
+from .database import guild_api as gapi
+
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(message)s",
@@ -49,6 +53,27 @@ class QuoraBot(commands.Bot):
 
     def up_time(self):
         return time.time() - self.startTime
+
+    def load_watcher_data(self):
+        for guild in self.guilds:
+            guild_watcher = wapi.get_guild_watcher(guild.id)
+            for watcher in guild_watcher:
+                update_channel = gapi.get_update_channel(guild.id)
+                user = uapi.get_user(user_id=watcher.user_id)
+                self.watcher.add_quora(
+                    user.quora_username,
+                    data_dict={
+                        "dispatch_to": [
+                            {
+                                "channel_id": update_channel,
+                                "discord_id": user.discord_id,
+                            }
+                        ]
+                    },
+                )
+
+    async def on_ready(self):
+        self.load_watcher_data()
 
 
 bot = QuoraBot(
