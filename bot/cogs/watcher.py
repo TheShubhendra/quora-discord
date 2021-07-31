@@ -26,17 +26,31 @@ class Watcher(commands.Cog):
             if not uapi.does_user_exist(ctx.author.id):
                 await ctx.repy("Please setup your profile first using `q!setup`.")
                 return
-            quora_username = uapi.get_quora_username(ctx.author.id)
+            user = uapi.get_user(discord_id=ctx.author.id)
             update_channel = gapi.get_update_channel(ctx.guild.id)
             if update_channel is None:
                 await ctx.reply(
                     "No channel is set update channel in this server.\nPlease ask admin to set the channel using `q!set_channel`."
                 )
                 return
-            wapi.add_watcher(ctx.guild.id, ctx.author.id, quora_username)
-
+            if wapi.add_watcher(str(ctx.guild.id), user.user_id) is None:
+                await ctx.reply(
+                    f"You are alreay watching {user.quora_username} on this server."
+                )
+                return
+            self.bot.watcher.add_quora(
+                user.quora_username,
+                data_dict={
+                    "dispatch_to": [
+                        {
+                            "channel_id": update_channel,
+                            "discord_id": user.discord_id,
+                        }
+                    ],
+                },
+            )
             await ctx.reply(
-                f"{ctx.author.mention} has been successfully added in watcher list for username {quora_username}"
+                f"{ctx.author.mention} has been successfully added in watcher list for username {user.quora_username}"
             )
 
 

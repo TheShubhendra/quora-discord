@@ -80,6 +80,17 @@ def get_quora_username(discord_id):
     return quoran.quora_username
 
 
+def get_user(discord_id=None, user_id=None):
+    if discord_id is not None:
+        quoran = (
+            SESSION.query(Quoran).filter(Quoran.discord_id == str(discord_id)).first()
+        )
+        return quoran
+    if user_id is not None:
+        quoran = SESSION.query(Quoran).get(user_id)
+        return quoran
+
+
 def update_access(discord_id, access):
     quoran = SESSION.query(Quoran).filter(Quoran.discord_id == str(discord_id)).first()
     quoran.access = access
