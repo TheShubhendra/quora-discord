@@ -13,6 +13,9 @@ class Watcher(commands.Cog):
     async def set_channel(self, ctx):
         """Set update channel in Server."""
         async with ctx.channel.typing():
+            if not ctx.author.guild_permissions.administrator:
+                await ctx.reply("Only Admins can execute this command.")
+                return
             channel = ctx.message.channel_mentions[0]
             gapi.set_update_channel(ctx.guild, channel.id)
             await ctx.reply(
