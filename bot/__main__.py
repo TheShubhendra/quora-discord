@@ -59,23 +59,36 @@ class QuoraBot(commands.Bot):
         return time.time() - self.startTime
 
     def load_watcher_data(self):
+        self.watcher_list = {}
         for guild in self.guilds:
             guild_watcher = wapi.get_guild_watcher(guild.id)
             for watcher in guild_watcher:
                 update_channel = gapi.get_update_channel(guild.id)
                 user = uapi.get_user(user_id=watcher.user_id)
-                self.watcher.add_quora(
-                    user.quora_username,
-                    update_interval=60,
-                    data_dict={
+                if not user.quora_username in self.watcher_list.keys():
+                    data_dict = {
                         "dispatch_to": [
                             {
                                 "channel_id": update_channel,
                                 "discord_id": user.discord_id,
                             }
                         ]
-                    },
-                )
+                    }
+                    self.watcher_list[user.quora_username] = data_dict
+                else:
+                    data = self.watcher_list[user.quora_username]
+                    ls = data["dispatch_to"]
+                    ls.append(
+                        {"channel_id": update_channel, "discord_id": user.discord_id}
+                    )
+                    data["dispatch_to"] = ls
+                    self.watcher_list[user.quora_username] = data
+        for i, j in self.watcher_list.items():
+            self.watcher.add_quora(
+                i,
+                update_interval=60,
+                data_dict=j,
+            )
 
     def load_module(self, file_path, module_name):
         spec = importlib.util.spec_from_file_location(
