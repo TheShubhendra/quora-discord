@@ -66,7 +66,7 @@ class QuoraBot(commands.Bot):
                 user = uapi.get_user(user_id=watcher.user_id)
                 self.watcher.add_quora(
                     user.quora_username,
-                    update_interval=2,
+                    update_interval=60,
                     data_dict={
                         "dispatch_to": [
                             {
