@@ -4,11 +4,13 @@ from decouple import config
 import logging
 import glob
 import time
+import asyncio
 from .utils.embeds import (
     bot_help_embed,
     command_help_embed,
 )
 from watcher import Watcher
+from watcher.events.quora import QuoraEvent
 from .database import watcher_api as wapi
 from .database import userprofile_api as uapi
 from .database import guild_api as gapi
@@ -62,6 +64,7 @@ class QuoraBot(commands.Bot):
                 user = uapi.get_user(user_id=watcher.user_id)
                 self.watcher.add_quora(
                     user.quora_username,
+                    update_interval=2,
                     data_dict={
                         "dispatch_to": [
                             {
@@ -74,6 +77,8 @@ class QuoraBot(commands.Bot):
 
     async def on_ready(self):
         self.load_watcher_data()
+        loop = asyncio.get_running_loop()
+        loop.create_task(self.watcher.run())
 
 
 bot = QuoraBot(
@@ -101,4 +106,14 @@ async def on_member_remove(member):
 for cog in glob.glob("bot/cogs/*.py"):
     bot.load_extension(cog[:-3].replace("/", "."))
 
-bot.run(TOKEN)
+
+
+loop = asyncio.get_event_loop()
+
+try:
+    loop.run_until_complete(bot.run(TOKEN))
+except KeyboardInterrupt:
+    bot.watcher.stop()
+    loop.run_until_complete(bot.close())
+finally:
+    loop.close()
