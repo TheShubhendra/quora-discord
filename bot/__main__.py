@@ -5,6 +5,9 @@ import logging
 import glob
 import time
 import asyncio
+import sys
+import os
+import importlib
 from .utils.embeds import (
     bot_help_embed,
     command_help_embed,
@@ -75,6 +78,15 @@ class QuoraBot(commands.Bot):
                     },
                 )
 
+    def load_module(self, file_path, module_name):
+        spec = importlib.util.spec_from_file_location(
+            module_name, os.getcwd() + file_path
+        )
+        module = importlib.util.module_from_spec(spec)
+        module.bot = self
+        sys.modules[module_name] = module
+        spec.loader.exec_module(module)
+
     async def on_ready(self):
         self.load_watcher_data()
         loop = asyncio.get_running_loop()
@@ -105,8 +117,7 @@ async def on_member_remove(member):
 
 for cog in glob.glob("bot/cogs/*.py"):
     bot.load_extension(cog[:-3].replace("/", "."))
-
-
+bot.load_module("/bot/modules/whandler.py", "whandler")
 
 loop = asyncio.get_event_loop()
 
