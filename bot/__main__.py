@@ -123,7 +123,7 @@ loop = asyncio.get_event_loop()
 try:
     loop.run_until_complete(bot.run(TOKEN))
 except KeyboardInterrupt:
-    bot.watcher.stop()
     loop.run_until_complete(bot.close())
+    bot.watcher.stop()
 finally:
     loop.close()

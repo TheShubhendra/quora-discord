@@ -40,3 +40,4 @@ def add_watcher(guild_id, user_id):
     watcher = Watcher(guild_id, user_id)
     SESSION.add(watcher)
     SESSION.commit()
+    return True
