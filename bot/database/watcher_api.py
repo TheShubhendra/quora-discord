@@ -9,7 +9,8 @@ from . import (
 
 class Watcher(BASE):
     __tablename__ = "watcher_data"
-    guild_id = Column(String(50), primary_key=True)
+    id = Column(Integer, primary_key=True)
+    guild_id = Column(String(50))
     user_id = Column(Integer)
 
     def __init__(
