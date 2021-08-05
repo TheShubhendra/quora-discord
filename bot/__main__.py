@@ -86,7 +86,7 @@ class QuoraBot(commands.Bot):
         for i, j in self.watcher_list.items():
             self.watcher.add_quora(
                 i,
-                update_interval=60,
+                update_interval=600,
                 data_dict=j,
             )
 
