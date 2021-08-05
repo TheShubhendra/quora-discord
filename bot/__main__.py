@@ -13,7 +13,6 @@ from .utils.embeds import (
     command_help_embed,
 )
 from watcher import Watcher
-from watcher.events.quora import QuoraEvent
 from .database import watcher_api as wapi
 from .database import userprofile_api as uapi
 from .database import guild_api as gapi
