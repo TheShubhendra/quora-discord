@@ -108,6 +108,7 @@ class QuoraBot(commands.Bot):
 bot = QuoraBot(
     command_prefix="q!",
     owner_id=OWNER_ID,
+    case_insensitive=True,
     strip_after_prefix=True,
     description="This bot lets you to interact with Quora.",
     activity=activity,
