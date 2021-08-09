@@ -27,7 +27,7 @@ class Watcher(commands.Cog):
         """Add Quora profiles to watching list."""
         async with ctx.channel.typing():
             if not uapi.does_user_exist(ctx.author.id):
-                await ctx.repy("Please setup your profile first using `q!setup`.")
+                await ctx.reply("Please setup your profile first using `q!setup`.")
                 return
             user = uapi.get_user(discord_id=ctx.author.id)
             update_channel = gapi.get_update_channel(ctx.guild.id)

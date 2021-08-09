@@ -99,7 +99,7 @@ class Profile(commands.Cog):
             )
             return
         except Exception as e:
-            await ctx.reply("```\n" + str(e) + "\n```")
+            await ctx.reply("```\nAn Unknown Error happened: " + str(e) + "\n```")
             return
         try:
             await ctx.send(embed=profile_embed(profile))
