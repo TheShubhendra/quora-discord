@@ -46,6 +46,8 @@ class QuoraHelpCommand(commands.HelpCommand):
         await destination.send(embed=command_help_embed(command))
 
 
+
+
 class QuoraBot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -75,7 +77,7 @@ class QuoraBot(commands.Bot):
                             }
                         ]
                     }
-                    self.watcher_list[user.quora_username] = data_dict
+                    self.watcher_list[user] = data_dict
                 else:
                     data = self.watcher_list[user.quora_username]
                     ls = data["dispatch_to"]
@@ -84,11 +86,12 @@ class QuoraBot(commands.Bot):
                     )
                     data["dispatch_to"] = ls
                     self.watcher_list[user.quora_username] = data
-        for i, j in self.watcher_list.items():
+        for user, data in self.watcher_list.items():
             self.watcher.add_quora(
-                i,
+                user.quora_username,
                 update_interval=600,
-                data_dict=j,
+                data_dict=data,
+                stateInitializer=self.stateCustomizer(user.answer_count, user.follower_count),
             )
 
     def load_module(self, file_path, module_name):
@@ -99,6 +102,12 @@ class QuoraBot(commands.Bot):
         module.bot = self
         sys.modules[module_name] = module
         spec.loader.exec_module(module)
+    def stateCustomizer(self, answerCount, followerCount):
+        def wrapper(obj):
+            obj.answerCount = answerCount
+            obj.followerCount = followerCount
+            return obj
+        return wrapper
 
     async def on_ready(self):
         self.load_watcher_data()

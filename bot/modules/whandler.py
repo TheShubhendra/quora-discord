@@ -2,7 +2,7 @@ from watcher.events.quora import (
     AnswerCountChange,
     FollowerCountChange,
 )
-from database import userprofile_api as api
+from bot.database import userprofile_api as api
 
 
 @bot.watcher.dispatcher.on(AnswerCountChange)

@@ -16,19 +16,6 @@ from decouple import config
 CREATE_TABLES = bool(int(config("CREATE_TABLES", 1)))
 
 
-class QuoranData(BASE):
-    __tablename__ = "quoran_data"
-    user_id = Column(Integer, primary_key=True)
-
-    def __init__(
-        self,
-        user_id,
-        follower_count,
-        answer_count,
-    ):
-        self.user_id = user_id
-
-
 class Quoran(BASE):
     __tablename__ = "quoran"
     user_id = Column(Integer, primary_key=True)
@@ -36,7 +23,7 @@ class Quoran(BASE):
     discord_username = Column(String(100))
     quora_username = Column(String(50))
     follower_count = Column(Integer)
-    answer_count = Column(Integer, primary_key=True)
+    answer_count = Column(Integer)
     access = Column(String(10))
 
     def __init__(
