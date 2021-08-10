@@ -16,7 +16,7 @@ from watcher import Watcher
 from .database import watcher_api as wapi
 from .database import userprofile_api as uapi
 from .database import guild_api as gapi
-from quora import User
+from quora.sync import User as User
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(message)s",
@@ -60,7 +60,7 @@ class QuoraBot(commands.Bot):
     def up_time(self):
         return time.time() - self.startTime
 
-    def load_watcher_data(self):
+    async def load_watcher_data(self):
         self.watcher_list = {}
         for guild in self.guilds:
             guild_watcher = wapi.get_guild_watcher(guild.id)
@@ -90,17 +90,19 @@ class QuoraBot(commands.Bot):
             if user.answer_count and user.follower_count:
                 self.watcher.add_quora(
                     user.quora_username,
-                    update_interval=10,
+                    update_interval=600,
                     data_dict=data,
                     stateInitializer=self.stateCustomizer(user.answer_count, user.follower_count),
                 )
             else:
-                u = await User(user.quora_username).profile()
+                u = User(user.quora_username)
+                u = await u.profile()
+                
                 uapi.update_follower_count(user.user_id, u.followerCount)
                 uapi.update_answer_count(user.user_id, u.answerCount)
                 self.watcher.add_quora(
                     user.quora_username,
-                    update_interval=10,
+                    update_interval=600,
                     data_dict=data,
                 )
                 
@@ -121,7 +123,7 @@ class QuoraBot(commands.Bot):
         return wrapper
 
     async def on_ready(self):
-        self.load_watcher_data()
+        await self.load_watcher_data()
         loop = asyncio.get_running_loop()
         loop.create_task(self.watcher.run())
 

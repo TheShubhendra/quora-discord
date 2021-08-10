@@ -126,11 +126,16 @@ def profile_count():
 
 def update_answer_count(user_id, countChange):
     account = SESSION.query(Quoran).get(user_id)
-    account.answer_count += countChange
+    if account.answer_count is None:
+        account.answer_count = countChange
+    else:
+        account.answer_count += countChange
     SESSION.commit()
 
 
 def update_follower_count(user_id, countChange):
     account = SESSION.query(Quoran).get(user_id)
+    if account.follower_count is None:
+        account.follower_count = 0
     account.follower_count += countChange
     SESSION.commit()
