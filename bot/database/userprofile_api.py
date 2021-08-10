@@ -16,18 +16,43 @@ from decouple import config
 CREATE_TABLES = bool(int(config("CREATE_TABLES", 1)))
 
 
+class QuoranData(BASE):
+    __tablename__ = "quoran_data"
+    user_id = Column(Integer, primary_key=True)
+
+    def __init__(
+        self,
+        user_id,
+        follower_count,
+        answer_count,
+    ):
+        self.user_id = user_id
+
+
 class Quoran(BASE):
     __tablename__ = "quoran"
     user_id = Column(Integer, primary_key=True)
     discord_id = Column(String(50))
     discord_username = Column(String(100))
     quora_username = Column(String(50))
+    follower_count = Column(Integer)
+    answer_count = Column(Integer, primary_key=True)
     access = Column(String(10))
 
-    def __init__(self, discord_id, discord_username, quora_username, access="public"):
+    def __init__(
+        self,
+        discord_id,
+        discord_username,
+        quora_username,
+        answer_count=0,
+        follower_count=0,
+        access="public",
+    ):
         self.discord_id = discord_id
         self.discord_username = discord_username
         self.quora_username = quora_username
+        self.follower_count = follower_count
+        self.answer_count = answer_count
         self.access = access
 
 
@@ -57,18 +82,29 @@ def delete_user(discord_id):
     SESSION.commit()
 
 
-def update_username(discord_id, username, access="public"):
+def update_quoran(discord_id, username, followerCount, answerCount,  access="public"):
     user = SESSION.query(Quoran).filter(Quoran.discord_id == str(discord_id)).first()
     user.quora_username = username
     user.access = access
+    user.followerCount = follower_count
+    user.answerCount = answer_count
     SESSION.commit()
 
 
-def add_user(discord_id, discord_username, quora_username, access="public"):
+def add_user(
+    discord_id,
+    discord_username,
+    quora_username,
+    follower_count=None,
+    answer_count=None,
+    access="public",
+):
     quoran = Quoran(
         discord_id,
         discord_username,
         quora_username,
+        follower_count,
+        answer_count,
         access,
     )
     SESSION.add(quoran)
@@ -99,3 +135,15 @@ def update_access(discord_id, access):
 
 def profile_count():
     return SESSION.query(Quoran).count()
+
+
+def update_answer_count(user_id, countChange):
+    account = SESSION.query(Quoran).get(user_id)
+    account.answer_count += countChange
+    SESSION.commit()
+
+
+def update_follower_count(user_id, countChange):
+    account = SESSION.query(Quoran).get(user_id)
+    account.follower_count += countChange
+    SESSION.commit()
