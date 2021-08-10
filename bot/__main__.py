@@ -67,6 +67,7 @@ class QuoraBot(commands.Bot):
                 user = uapi.get_user(user_id=watcher.user_id)
                 if not user.quora_username in self.watcher_list.keys():
                     data_dict = {
+                        "user_id":user.user_id,
                         "dispatch_to": [
                             {
                                 "channel_id": update_channel,
