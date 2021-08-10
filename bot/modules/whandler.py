@@ -2,11 +2,14 @@ from watcher.events.quora import (
     AnswerCountChange,
     FollowerCountChange,
 )
+from bot.database import userprofile_api as api
 
 
 @bot.watcher.dispatcher.on(AnswerCountChange)
 async def inform_answer_count_change(event):
     destinations = event.data_dict["dispatch_to"]
+    user_id = event.data_dict["user_id"]
+    api.update_answer_count(user_id, event.countChange)
     if event.countChange >= 1:
         for dest in destinations:
             channel = await bot.fetch_channel(dest["channel_id"])
@@ -24,6 +27,8 @@ async def inform_answer_count_change(event):
 @bot.watcher.dispatcher.on(FollowerCountChange)
 async def inform_follower_count_change(event):
     destinations = event.data_dict["dispatch_to"]
+    user_id = event.data_dict["user_id"]
+    api.update_follower_count(user_id, event.countChange)
     if event.countChange >= 1:
         for dest in destinations:
             channel = await bot.fetch_channel(dest["channel_id"])

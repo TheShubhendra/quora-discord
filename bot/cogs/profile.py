@@ -33,17 +33,19 @@ class Profile(commands.Cog):
             await ctx.reply("Username or profile link is not valid")
             return
         try:
-            _ = await User(username).profile()
+            profile = await User(username).profile()
         except:
             await ctx.reply("Username or profile link is not valid")
             return
         if api.does_user_exist(str(ctx.author.id), check_hidden=True):
-            api.update_username(str(ctx.author.id), username)
+            api.update_quoran(str(ctx.author.id), username, profile.followerCount, profile.AnswerCount)
         else:
             api.add_user(
                 ctx.author.id,
                 ctx.author.name,
                 username,
+                profile.followerCount,
+                profile.answerCount,
             )
         await ctx.reply(
             f"Your username {username} has been successfully updated in the database."
