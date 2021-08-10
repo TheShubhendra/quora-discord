@@ -16,7 +16,7 @@ from watcher import Watcher
 from .database import watcher_api as wapi
 from .database import userprofile_api as uapi
 from .database import guild_api as gapi
-
+from quora import User
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(message)s",
@@ -87,12 +87,23 @@ class QuoraBot(commands.Bot):
                     data["dispatch_to"] = ls
                     self.watcher_list[user.quora_username] = data
         for user, data in self.watcher_list.items():
-            self.watcher.add_quora(
-                user.quora_username,
-                update_interval=600,
-                data_dict=data,
-                stateInitializer=self.stateCustomizer(user.answer_count, user.follower_count),
-            )
+            if user.answer_count and user.follower_count:
+                self.watcher.add_quora(
+                    user.quora_username,
+                    update_interval=10,
+                    data_dict=data,
+                    stateInitializer=self.stateCustomizer(user.answer_count, user.follower_count),
+                )
+            else:
+                u = await User(user.quora_username).profile()
+                uapi.update_follower_count(user.user_id, u.followerCount)
+                uapi.update_answer_count(user.user_id, u.answerCount)
+                self.watcher.add_quora(
+                    user.quora_username,
+                    update_interval=10,
+                    data_dict=data,
+                )
+                
 
     def load_module(self, file_path, module_name):
         spec = importlib.util.spec_from_file_location(
