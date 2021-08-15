@@ -132,7 +132,9 @@ class QuoraBot(commands.Bot):
         await self.load_watcher_data()
         loop = asyncio.get_running_loop()
         loop.create_task(self.watcher.run())
-        await self.log(f"Boot up completed in {self.up_time()} ms.")
+        await self.log(
+            f"Boot up completed in {self.up_time()} s.\nRunning {len(self.watcher.updaters)} updaters."
+        )
 
     async def inform(self, information):
         admin = await self.fetch_user(self.owner_id)
@@ -142,6 +144,15 @@ class QuoraBot(commands.Bot):
         if self.log_channel is None:
             self.log_channel = await self.fetch_channel(self.log_channel_id)
         await self.log_channel.send(f"```\n{data}\n```")
+
+    async def on_member_remove(self, member):
+        if member.id == bot.owner_id:
+            guild = member.guild
+            await guild.system_channel.send(
+                "My Developer Shubhendra Sir left the Server so I'm leaving too. Don't expect me back."
+            )
+            print("Going to leave", str(guild), guild.id)
+            await guild.leave()
 
 
 bot = QuoraBot(
@@ -153,18 +164,6 @@ bot = QuoraBot(
     activity=activity,
     help_command=QuoraHelpCommand(),
 )
-
-
-@bot.listen()
-async def on_member_remove(member):
-    print("XXXXXXXXXXXXXXXXXX")
-    if member.id == bot.owner_id:
-        guild = member.guild
-        await guild.system_channel.send(
-            "My Developer Shubhendra Sir left the Server so I'm leaving too. Don't expect me back."
-        )
-        print("Going to leave", str(guild), guild.id)
-        await guild.leave()
 
 
 for cog in glob.glob("bot/cogs/*.py"):

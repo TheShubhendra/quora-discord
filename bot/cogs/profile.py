@@ -101,8 +101,11 @@ class Profile(commands.Cog):
         try:
             profile = await user.profile()
         except ProfileNotFoundError:
-            self.logger.exception("pfng")
+            self.logger.exception("No profile found")
             await ctx.reply(
+                f"No Quora profile found with the username `{quora_username}`."
+            )
+            await self.log(
                 f"No Quora profile found with the username `{quora_username}`."
             )
             return
@@ -187,14 +190,11 @@ class Profile(commands.Cog):
         if quora_username is None:
             return
         user = User(quora_username, session=self._session)
-        try:
-            profile = await user.profile()
-            answers = await user.answers()
+        profile = await user.profile()
+        answers = await user.answers()
 
-            embed = answers_embed(profile, answers)
-            await ctx.reply(embed=embed)
-        except Exception as e:
-            await ctx.reply("```\n" + str(e) + "\n```")
+        embed = answers_embed(profile, answers)
+        await ctx.reply(embed=embed)
 
     @commands.command(
         aliases=["knows_about", "k"],
@@ -209,14 +209,11 @@ class Profile(commands.Cog):
         if quora_username is None:
             return
         user = User(quora_username, session=self._session)
-        try:
-            profile = await user.profile()
-            knows_about = await user.knows_about()
+        profile = await user.profile()
+        knows_about = await user.knows_about()
 
-            embed = knows_about_embed(profile, knows_about)
-            await ctx.reply(embed=embed)
-        except Exception as e:
-            await ctx.reply("```\n" + str(e) + "\n```")
+        embed = knows_about_embed(profile, knows_about)
+        await ctx.reply(embed=embed)
 
 
 def setup(bot):
