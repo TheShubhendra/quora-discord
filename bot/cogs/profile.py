@@ -1,3 +1,4 @@
+import logging
 from discord.ext import commands
 from aiohttp import ClientSession
 from quora import User
@@ -17,8 +18,10 @@ class Profile(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self._session = None
+        self.logger = logging.getLogger(__name__)
 
     async def _create_session(self):
+        self.logger.debug("Creating a session.")
         self._session = ClientSession()
 
     @commands.command(
@@ -34,11 +37,13 @@ class Profile(commands.Cog):
             return
         try:
             profile = await User(username).profile()
-        except:
+        except ProfileNotFoundError:
             await ctx.reply("Username or profile link is not valid")
             return
         if api.does_user_exist(str(ctx.author.id), check_hidden=True):
-            api.update_quoran(str(ctx.author.id), username, profile.followerCount, profile.AnswerCount)
+            api.update_quoran(
+                str(ctx.author.id), username, profile.followerCount, profile.AnswerCount
+            )
         else:
             api.add_user(
                 ctx.author.id,
@@ -96,12 +101,12 @@ class Profile(commands.Cog):
         try:
             profile = await user.profile()
         except ProfileNotFoundError:
+            self.logger.exception("pfng")
             await ctx.reply(
                 f"No Quora profile found with the username `{quora_username}`."
             )
             return
         except Exception as e:
-            await ctx.reply("```\nAn Unknown Error happened: " + str(e) + "\n```")
             return
         try:
             await ctx.send(embed=profile_embed(profile))

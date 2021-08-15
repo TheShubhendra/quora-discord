@@ -45,7 +45,7 @@ class Watcher(commands.Cog):
                 user.quora_username,
                 update_interval=60,
                 data_dict={
-                    "user_id":user.user_id,
+                    "user_id": user.user_id,
                     "dispatch_to": [
                         {
                             "channel_id": update_channel,

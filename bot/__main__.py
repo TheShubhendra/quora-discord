@@ -18,13 +18,15 @@ from .database import userprofile_api as uapi
 from .database import guild_api as gapi
 from quora.sync import User as User
 
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(message)s",
-    level=logging.INFO,
-)
-
 TOKEN = config("TOKEN")
 OWNER_ID = int(config("OWNER_ID", None))
+LOGGING = int(config("LOGGING_LEVEL", 20))
+LOG_CHANNEL = int(config("LOG_CHANNEL", None))
+
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(message)s",
+    level=LOGGING,
+)
 
 
 activity = Streaming(
@@ -46,13 +48,13 @@ class QuoraHelpCommand(commands.HelpCommand):
         await destination.send(embed=command_help_embed(command))
 
 
-
-
 class QuoraBot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.watcher = Watcher()
         self.startTime = time.time()
+        self.log_channel_id = LOG_CHANNEL
+        self.log_channel = None
 
     async def on_command_error(self, ctx, exception):
         await ctx.send(exception)
@@ -69,13 +71,13 @@ class QuoraBot(commands.Bot):
                 user = uapi.get_user(user_id=watcher.user_id)
                 if not user.quora_username in self.watcher_list.keys():
                     data_dict = {
-                        "user_id":user.user_id,
+                        "user_id": user.user_id,
                         "dispatch_to": [
                             {
                                 "channel_id": update_channel,
                                 "discord_id": user.discord_id,
                             }
-                        ]
+                        ],
                     }
                     self.watcher_list[user] = data_dict
                 else:
@@ -92,12 +94,14 @@ class QuoraBot(commands.Bot):
                     user.quora_username,
                     update_interval=600,
                     data_dict=data,
-                    stateInitializer=self.stateCustomizer(user.answer_count, user.follower_count),
+                    stateInitializer=self.stateCustomizer(
+                        user.answer_count, user.follower_count
+                    ),
                 )
             else:
                 u = User(user.quora_username)
                 u = await u.profile()
-                
+
                 uapi.update_follower_count(user.user_id, u.followerCount)
                 uapi.update_answer_count(user.user_id, u.answerCount)
                 self.watcher.add_quora(
@@ -105,7 +109,6 @@ class QuoraBot(commands.Bot):
                     update_interval=600,
                     data_dict=data,
                 )
-                
 
     def load_module(self, file_path, module_name):
         spec = importlib.util.spec_from_file_location(
@@ -115,17 +118,30 @@ class QuoraBot(commands.Bot):
         module.bot = self
         sys.modules[module_name] = module
         spec.loader.exec_module(module)
+
     def stateCustomizer(self, answerCount, followerCount):
         def wrapper(obj):
             obj.answerCount = answerCount
             obj.followerCount = followerCount
             return obj
+
         return wrapper
 
     async def on_ready(self):
+        await self.inform("Boot up completed.")
         await self.load_watcher_data()
         loop = asyncio.get_running_loop()
         loop.create_task(self.watcher.run())
+        await self.log(f"Boot up completed in {self.up_time()} ms.")
+
+    async def inform(self, information):
+        admin = await self.fetch_user(self.owner_id)
+        await admin.send(information)
+
+    async def log(self, data):
+        if self.log_channel is None:
+            self.log_channel = await self.fetch_channel(self.log_channel_id)
+        await self.log_channel.send(f"```\n{data}\n```")
 
 
 bot = QuoraBot(

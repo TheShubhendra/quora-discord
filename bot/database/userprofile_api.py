@@ -69,7 +69,7 @@ def delete_user(discord_id):
     SESSION.commit()
 
 
-def update_quoran(discord_id, username, followerCount, answerCount,  access="public"):
+def update_quoran(discord_id, username, followerCount, answerCount, access="public"):
     user = SESSION.query(Quoran).filter(Quoran.discord_id == str(discord_id)).first()
     user.quora_username = username
     user.access = access
