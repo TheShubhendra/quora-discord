@@ -105,7 +105,7 @@ class Profile(commands.Cog):
             await ctx.reply(
                 f"No Quora profile found with the username `{quora_username}`."
             )
-            await self.log(
+            await self.bot.log(
                 f"No Quora profile found with the username `{quora_username}`."
             )
             return
