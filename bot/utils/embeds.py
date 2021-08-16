@@ -122,7 +122,7 @@ def answers_embed(profile, answers):
     try:
         embed.set_thumbnail(url=str(profile.profileImage))
     except:
-        pas
+        pass
     try:
         embed.set_author(
             name=profile.firstName + " " + profile.lastName,
