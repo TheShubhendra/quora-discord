@@ -3,7 +3,7 @@ import re
 
 def extract_links(text):
     pattern = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
-    return [i[o] for i in re.findall(pattern, text)]
+    return [i[0] for i in re.findall(pattern, text)]
 
 
 def extract_quora_username(text):
