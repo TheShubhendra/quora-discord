@@ -1,5 +1,5 @@
 from discord.ext import commands
-from discord import Streaming
+from discord import Streaming, Intents
 from decouple import config
 import logging
 import glob
@@ -154,6 +154,11 @@ class QuoraBot(commands.Bot):
             print("Going to leave", str(guild), guild.id)
             await guild.leave()
 
+intents = Intents(
+    guild_messages = True,
+    guilds = True,
+    members = True,
+    )
 
 bot = QuoraBot(
     command_prefix="q!",
@@ -162,6 +167,7 @@ bot = QuoraBot(
     strip_after_prefix=True,
     description="This bot lets you to interact with Quora.",
     activity=activity,
+    intents = intents,
     help_command=QuoraHelpCommand(),
 )
 
