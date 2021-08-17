@@ -35,6 +35,15 @@ class Admin(commands.Cog):
         await asyncio.sleep(3)
         os.remove("logs.txt")
 
+    @commands.command(hidden=True)
+    async def setp(self, ctx, arg1, arg2):
+        if ctx.author.id != self.bot.owner_id:
+            await ctx.send("You don't have permission to execute this command.")
+            return
+        cog = self.bot.get_cog("Profile")
+        user_id = ctx.message.mentions[0].id
+        await cog.setprofile(ctx, arg2, user_id=user_id)
+
 
 def setup(bot):
     cog = Admin(bot)

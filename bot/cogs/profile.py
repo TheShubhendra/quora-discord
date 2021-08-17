@@ -29,8 +29,15 @@ class Profile(commands.Cog):
         help="Use this command to link your quora profile with this bot\nUsage: q!setprofile <Quora username or profile link>",
         brief="Links your Quora profile.",
     )
-    async def setprofile(self, ctx, quora_username_or_profile_link):
+    async def setprofile(
+        self,
+        ctx,
+        quora_username_or_profile_link,
+        user_id=None,
+    ):
         """Links your Quora profile."""
+        if user_id is None:
+            user_id = ctx.author.id
         username = extract_quora_username(quora_username_or_profile_link)
         if username is None:
             await ctx.reply("Username or profile link is not valid")
@@ -40,13 +47,13 @@ class Profile(commands.Cog):
         except ProfileNotFoundError:
             await ctx.reply("Username or profile link is not valid")
             return
-        if api.does_user_exist(str(ctx.author.id), check_hidden=True):
+        if api.does_user_exist(str(user_id), check_hidden=True):
             api.update_quoran(
-                str(ctx.author.id), username, profile.followerCount, profile.AnswerCount
+                str(user_id), username, profile.followerCount, profile.AnswerCount
             )
         else:
             api.add_user(
-                ctx.author.id,
+                user_id,
                 ctx.author.name,
                 username,
                 profile.followerCount,
