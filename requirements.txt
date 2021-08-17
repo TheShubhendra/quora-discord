@@ -2,6 +2,7 @@ discord.py==1.7.3
 python-decouple
 git+https://github.com/TheShubhendra/pyquora.git
 sqlalchemy==1.3.22
+texttable
 psycopg2
 git+https://github.com/TheShubhendra/profile-watcher.git
 heroku3
