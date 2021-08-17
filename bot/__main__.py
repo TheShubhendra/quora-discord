@@ -92,7 +92,7 @@ class QuoraBot(commands.Bot):
             if user.answer_count and user.follower_count:
                 self.watcher.add_quora(
                     user.quora_username,
-                    update_interval=600,
+                    update_interval=900,
                     data_dict=data,
                     stateInitializer=self.stateCustomizer(
                         user.answer_count, user.follower_count

@@ -43,7 +43,7 @@ class Watcher(commands.Cog):
                 return
             self.bot.watcher.add_quora(
                 user.quora_username,
-                update_interval=60,
+                update_interval=900,
                 data_dict={
                     "user_id": user.user_id,
                     "dispatch_to": [

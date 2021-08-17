@@ -113,7 +113,7 @@ class Profile(commands.Cog):
                 f"No Quora profile found with the username `{quora_username}`."
             )
             await self.bot.log(
-                f"No Quora profile found with the username `{quora_username}`."
+                f"No Quora profile found with the username {quora_username}.\nChannel: {ctx.channel.mention}"
             )
             return
         except Exception as e:
