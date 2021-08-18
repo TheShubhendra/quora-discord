@@ -74,7 +74,7 @@ class Profile(commands.Cog):
         try:
             profile = await User(username).profile()
         except ProfileNotFoundError:
-            self.bot.log(f"Error in setprofile: {quora_username_or_profile_link}\n{ctx.author}\n{ctx.channel}")
+            self.bot.log(f"Error in set profile {quora_username}.\nChannel:\n``` {ctx.channel.mention}\n{ctx.channel}{ctx.channel.id}\n{ctx.channel.guild}\n{ctx.author}")
             await ctx.reply("Username or profile link is not valid")
             return
         if api.does_user_exist(str(user_id), check_hidden=True):
@@ -143,7 +143,7 @@ class Profile(commands.Cog):
                 f"No Quora profile found with the username `{quora_username}`."
             )
             await self.bot.log(
-                f"No Quora profile found with the username {quora_username}.\nChannel:\n``` {ctx.channel.mention}\n{ctx.channel}\n{ctx.author}"
+                f"No Quora profile found with the username {quora_username}.\nChannel:\n``` {ctx.channel.mention}\n{ctx.channel}{ctx.channel.id}\n{ctx.channel.guild}\n{ctx.author}"
             )
         message = await ctx.send(
             embed=profile_embed(profile),
