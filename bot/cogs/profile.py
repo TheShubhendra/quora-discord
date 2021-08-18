@@ -143,18 +143,19 @@ class Profile(commands.Cog):
             await self.bot.log(
                 f"No Quora profile found with the username {quora_username}.\nChannel: {ctx.channel.mention}"
             )
-
-        await ctx.send(
+        message = await ctx.send(
             embed=profile_embed(profile),
             components=self.components,
         )
         while True:
             try:
-                interaction = await self.bot.wait_for("select_option")
+                interaction = await self.bot.wait_for(
+                    "select_option",
+                     check = lambda i :i.message == message and i.user == ctx.author, 
+                  )
             except Exception as e:
                 self.logger.exception(str(e))
             selection = interaction.component[0].value
-            self.logger.info(selection)
             if selection == "profile":
                 embed = profile_embed(profile)
             elif selection == "pic":
