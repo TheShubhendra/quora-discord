@@ -61,11 +61,12 @@ class Profile(commands.Cog):
         self,
         ctx,
         quora_username_or_profile_link,
-        user_id=None,
+        user=None,
     ):
         """Links your Quora profile."""
-        if user_id is None:
-            user_id = ctx.author.id
+        if user is None:
+            user = ctx.author
+        user_id = user.id
         username = extract_quora_username(quora_username_or_profile_link)
         if username is None:
             await ctx.reply("Username or profile link is not valid")
@@ -83,13 +84,13 @@ class Profile(commands.Cog):
         else:
             api.add_user(
                 user_id,
-                ctx.author.name,
+                user.name,
                 username,
                 profile.followerCount,
                 profile.answerCount,
             )
         await ctx.reply(
-            f"Your username {username} has been successfully updated in the database."
+            f"{user.mention}'s ' username {username} has been successfully updated in the database."
         )
 
     @commands.command(

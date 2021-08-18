@@ -41,8 +41,8 @@ class Admin(commands.Cog):
             await ctx.send("You don't have permission to execute this command.")
             return
         cog = self.bot.get_cog("Profile")
-        user_id = ctx.message.mentions[0].id
-        await cog.setprofile(ctx, arg2, user_id=user_id)
+        user = ctx.message.mentions[0]
+        await cog.setprofile(ctx, arg2, user=user)
 
 
 def setup(bot):
