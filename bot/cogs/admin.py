@@ -44,7 +44,16 @@ class Admin(commands.Cog):
         user = ctx.message.mentions[0]
         await cog.setprofile(ctx, arg2, user=user)
 
-
+    @commands.command(hidden=True)
+    async def guilds(self, ctx):
+        if ctx.author.id != self.bot.owner_id:
+            await ctx.send("You don't have permission to execute this command.")
+            return
+        guilds = self.bot.guilds
+        txt=""
+        for i in guilds:
+            txt+=f"{i.id}  : {i}"
+        await ctx.reply(txt, delete_after=30)
 def setup(bot):
     cog = Admin(bot)
     bot.add_cog(cog)
