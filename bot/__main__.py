@@ -16,6 +16,8 @@ from watcher import Watcher
 from .database import watcher_api as wapi
 from .database import userprofile_api as uapi
 from .database import guild_api as gapi
+from .database import SESSION
+
 from quora.sync import User as User
 from discord_components import DiscordComponents
 
@@ -31,6 +33,7 @@ logging.basicConfig(
     level=LOGGING,
 )
 
+logger = logging.getLogger(__name__)
 
 activity = Streaming(
     name="Quora",
@@ -151,6 +154,7 @@ class QuoraBot(commands.Bot):
         await self.log_channel.send(f"```\n{data}\n```")
 
     async def on_member_remove(self, member):
+        logger.info("Someone left")
         if member.id == bot.owner_id:
             guild = member.guild
             await guild.system_channel.send(
@@ -181,6 +185,13 @@ bot = QuoraBot(
 for cog in glob.glob("bot/cogs/*.py"):
     bot.load_extension(cog[:-3].replace("/", "."))
 bot.load_module("/bot/modules/whandler.py", "whandler")
+
+@bot.listen('on_member_update')
+async def update_member(old, new):
+    logger.info(f"{new} Updated thier profile.")
+    user = uapi.get_user(discord_id=old.id)
+    user.discord_username = new.name+"#"+str(new.discriminator)
+    SESSION.commit()
 
 loop = asyncio.get_event_loop()
 

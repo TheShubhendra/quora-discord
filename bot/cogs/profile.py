@@ -84,7 +84,7 @@ class Profile(commands.Cog):
         else:
             api.add_user(
                 user_id,
-                user.name,
+                user.name+"#"+str(user.discriminator),
                 username,
                 profile.followerCount,
                 profile.answerCount,
