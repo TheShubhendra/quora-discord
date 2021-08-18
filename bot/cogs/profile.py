@@ -49,7 +49,7 @@ class Profile(commands.Cog):
             return
         if api.does_user_exist(str(user_id), check_hidden=True):
             api.update_quoran(
-                str(user_id), username, profile.followerCount, profile.AnswerCount
+                str(user_id), username, profile.followerCount, profile.answerCount
             )
         else:
             api.add_user(
