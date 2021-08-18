@@ -5,3 +5,4 @@ sqlalchemy==1.3.22
 psycopg2
 git+https://github.com/TheShubhendra/profile-watcher.git
 heroku3
+discord_components
