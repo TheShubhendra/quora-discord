@@ -24,6 +24,7 @@ TOKEN = config("TOKEN")
 OWNER_ID = int(config("OWNER_ID", None))
 LOGGING = int(config("LOGGING_LEVEL", 20))
 LOG_CHANNEL = int(config("LOG_CHANNEL", None))
+WATCHER = bool(int(config("WATCHER",1)))
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(message)s",
@@ -132,12 +133,13 @@ class QuoraBot(commands.Bot):
     async def on_ready(self):
         DiscordComponents(self)
         await self.inform("Boot up completed.")
-        await self.load_watcher_data()
-        loop = asyncio.get_running_loop()
-        loop.create_task(self.watcher.run())
-        await self.log(
-            f"Boot up completed in {self.up_time()} s.\nRunning {len(self.watcher.updaters)} updaters."
-        )
+        if WATCHER:
+            await self.load_watcher_data()
+            loop = asyncio.get_running_loop()
+            loop.create_task(self.watcher.run())
+            await self.log(
+                f"Boot up completed in {self.up_time()} s.\nRunning {len(self.watcher.updaters)} updaters."
+            )
 
     async def inform(self, information):
         admin = await self.fetch_user(self.owner_id)
@@ -157,11 +159,12 @@ class QuoraBot(commands.Bot):
             print("Going to leave", str(guild), guild.id)
             await guild.leave()
 
+
 intents = Intents(
-    guild_messages = True,
-    guilds = True,
-    members = True,
-    )
+    guild_messages=True,
+    guilds=True,
+    members=True,
+)
 
 bot = QuoraBot(
     command_prefix="q!",
@@ -170,7 +173,7 @@ bot = QuoraBot(
     strip_after_prefix=True,
     description="This bot lets you to interact with Quora.",
     activity=activity,
-    intents = intents,
+    intents=intents,
     help_command=QuoraHelpCommand(),
 )
 
