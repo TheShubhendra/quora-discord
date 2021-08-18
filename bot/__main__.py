@@ -17,6 +17,8 @@ from .database import watcher_api as wapi
 from .database import userprofile_api as uapi
 from .database import guild_api as gapi
 from quora.sync import User as User
+from discord_components import DiscordComponents
+
 
 TOKEN = config("TOKEN")
 OWNER_ID = int(config("OWNER_ID", None))
@@ -128,6 +130,7 @@ class QuoraBot(commands.Bot):
         return wrapper
 
     async def on_ready(self):
+        DiscordComponents(self)
         await self.inform("Boot up completed.")
         await self.load_watcher_data()
         loop = asyncio.get_running_loop()
