@@ -73,8 +73,8 @@ def update_quoran(discord_id, username, followerCount, answerCount, access="publ
     user = SESSION.query(Quoran).filter(Quoran.discord_id == str(discord_id)).first()
     user.quora_username = username
     user.access = access
-    user.followerCount = follower_count
-    user.answerCount = answer_count
+    user.followerCount = followerCount
+    user.answerCount = answerCount
     SESSION.commit()
 
 
