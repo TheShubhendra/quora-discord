@@ -4,6 +4,7 @@ from aiohttp import ClientSession
 from quora import User
 from quora.exceptions import ProfileNotFoundError
 from bot.database import userprofile_api as api
+from discord_components import DiscordComponents, Button, Select, SelectOption
 from bot.utils import (
     extract_quora_username,
     profile_embed,
@@ -19,6 +20,33 @@ class Profile(commands.Cog):
         self.bot = bot
         self._session = None
         self.logger = logging.getLogger(__name__)
+        self.components = [
+            Select(
+                placeholder="Select sections",
+                options=[
+                    SelectOption(
+                        label="General Profile",
+                        value="profile",
+                    ),
+                    SelectOption(
+                        label="Profile Picture",
+                        value="pic",
+                    ),
+                    SelectOption(
+                        label="Profile Bio",
+                        value="bio",
+                    ),
+                    SelectOption(
+                        label="Latest Answers",
+                        value="answers",
+                    ),
+                    SelectOption(
+                        label="Knows about",
+                        value="knows",
+                    ),
+                ],
+            )
+        ]
 
     async def _create_session(self):
         self.logger.debug("Creating a session.")
@@ -115,13 +143,39 @@ class Profile(commands.Cog):
             await self.bot.log(
                 f"No Quora profile found with the username {quora_username}.\nChannel: {ctx.channel.mention}"
             )
-            return
-        except Exception as e:
-            return
-        try:
-            await ctx.send(embed=profile_embed(profile))
-        except Exception as e:
-            await ctx.reply(e)
+
+        await ctx.send(
+            embed=profile_embed(profile),
+            components=self.components,
+        )
+        while True:
+            try:
+                interaction = await self.bot.wait_for("select_option")
+            except Exception as e:
+                self.logger.exception(str(e))
+            selection = interaction.component[0].value
+            self.logger.info(selection)
+            if selection == "profile":
+                embed = profile_embed(profile)
+            elif selection == "pic":
+                embed = profile_pic_embed(profile)
+            elif selection == "bio":
+                embed == profile_bio_embed(profile)
+            elif selection == "answers":
+                answers = await user.answers()
+                embed = answers_embed(profile, answers)
+            elif selection == "knows":
+                knows_about = await user.knows_about()
+                embed = knows_about_embed(profile, knows_about)
+            else:
+                continue
+            try:
+                await interaction.message.edit(
+                    embed=embed,
+                    components=self.components,
+                )
+            except:
+                self.logger.exception("Error")
 
     @commands.command(
         aliases=["picture", "pfp", "dp"],
