@@ -74,7 +74,7 @@ class Profile(commands.Cog):
         try:
             profile = await User(username).profile()
         except ProfileNotFoundError:
-            self.bot.log(f"Error in set profile {quora_username}.\nChannel:\n``` {ctx.channel.mention}\n{ctx.channel}{ctx.channel.id}\n{ctx.channel.guild}\n{ctx.author}")
+            self.bot.log(f"Error in set profile {username}.\nChannel:\n``` {ctx.channel.mention}\n{ctx.channel}{ctx.channel.id}\n{ctx.channel.guild}\n{ctx.author}")
             await ctx.reply("Username or profile link is not valid")
             return
         if api.does_user_exist(str(user_id), check_hidden=True):

@@ -190,6 +190,8 @@ bot.load_module("/bot/modules/whandler.py", "whandler")
 async def update_member(old, new):
     logger.info(f"{new} Updated thier profile.")
     user = uapi.get_user(discord_id=old.id)
+    if user is None:
+        return
     user.discord_username = new.name+"#"+str(new.discriminator)
     SESSION.commit()
 
