@@ -18,15 +18,16 @@ from .database import userprofile_api as uapi
 from .database import guild_api as gapi
 from .database import SESSION
 
-from quora.sync import User as User
+from quora.sync import User
 from discord_components import DiscordComponents
-
+from aiocache import Cache
 
 TOKEN = config("TOKEN")
 OWNER_ID = int(config("OWNER_ID", None))
 LOGGING = int(config("LOGGING_LEVEL", 20))
 LOG_CHANNEL = int(config("LOG_CHANNEL", None))
 WATCHER = bool(int(config("WATCHER",1)))
+REDIS_URL = config("REDIS_URL", None)
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(message)s",
@@ -61,7 +62,8 @@ class QuoraBot(commands.Bot):
         self.startTime = time.time()
         self.log_channel_id = LOG_CHANNEL
         self.log_channel = None
-
+        self._cache = Cache.from_url(REDIS_URL)
+        self.logger = logging.getLogger("Bot")
     async def on_command_error(self, ctx, exception):
         await ctx.send(exception)
 
@@ -163,7 +165,9 @@ class QuoraBot(commands.Bot):
             print("Going to leave", str(guild), guild.id)
             await guild.leave()
 
-
+    async def on_command_error(self, ctx, error):
+        logger.exception(error)
+        await self.log(error)
 intents = Intents(
     guild_messages=True,
     guilds=True,
