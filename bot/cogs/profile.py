@@ -178,7 +178,7 @@ class Profile(commands.Cog):
                     content="You are not allowed to interact with this message.",
                 )
                 continue
-            selection = interaction.component[0].value
+            selection = interaction.values[0]
             if selection == "profile":
                 embed = profile_embed(profile)
             elif selection == "pic":
