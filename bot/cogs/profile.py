@@ -1,4 +1,5 @@
 import logging
+from asyncio import TimeoutError
 from discord.ext import commands
 from aiohttp import ClientSession
 from quora import User
@@ -19,32 +20,33 @@ class Profile(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self._session = None
+        self.select_options = [
+            SelectOption(
+                label="General Profile",
+                value="profile",
+            ),
+            SelectOption(
+                label="Profile Picture",
+                value="pic",
+            ),
+            SelectOption(
+                label="Profile Bio",
+                value="bio",
+            ),
+            SelectOption(
+                label="Latest Answers",
+                value="answers",
+            ),
+            SelectOption(
+                label="Knows about",
+                value="knows",
+            ),
+        ]
         self.logger = logging.getLogger(__name__)
         self.components = [
             Select(
                 placeholder="Select sections",
-                options=[
-                    SelectOption(
-                        label="General Profile",
-                        value="profile",
-                    ),
-                    SelectOption(
-                        label="Profile Picture",
-                        value="pic",
-                    ),
-                    SelectOption(
-                        label="Profile Bio",
-                        value="bio",
-                    ),
-                    SelectOption(
-                        label="Latest Answers",
-                        value="answers",
-                    ),
-                    SelectOption(
-                        label="Knows about",
-                        value="knows",
-                    ),
-                ],
+                options=self.select_options,
             )
         ]
 
@@ -123,11 +125,12 @@ class Profile(commands.Cog):
 
     @commands.command(
         aliases=["p"],
+        name="profile",
         help="Use this command to fetch a Quora profile.\n**Usage**\n1. q!profile\n2. q!profile <mention someone>.\n3. q!profile <Username of the quoran.",
         usage="q!profile\nq!profile Shubhendra-Kushwaha-1\nq!profile <@72863363373337>",
         brief="Fetch a Quora profile.",
     )
-    async def profile(self, ctx, quora_username=None):
+    async def fetch_profile(self, ctx, quora_username=None):
         """Gives details of any Quora profile."""
         if self._session is None:
             await self._create_session()
@@ -153,10 +156,28 @@ class Profile(commands.Cog):
             try:
                 interaction = await self.bot.wait_for(
                     "select_option",
-                     check = lambda i :i.message == message and i.user == ctx.author, 
-                  )
+                    check=lambda i: i.message == message,
+                    timeout=30,
+                )
+            except TimeoutError:
+                await message.edit(
+                    components=[
+                        Select(
+                            placeholder="Select sections",
+                            options=self.select_options,
+                            disabled=True,
+                        )
+                    ]
+                )
+                return
             except Exception as e:
                 self.logger.exception(str(e))
+                continue
+            if interaction.user != ctx.author and interaction.user != self.bot.owner_id:
+                await interaction.respond(
+                    content="You are not allowed to interact with this message.",
+                )
+                continue
             selection = interaction.component[0].value
             if selection == "profile":
                 embed = profile_embed(profile)
