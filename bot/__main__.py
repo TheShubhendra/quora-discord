@@ -60,7 +60,7 @@ class QuoraBot(commands.Bot):
         self.log_channel = None
 
     async def on_command_error(self, ctx, exception):
-        await ctx.send(exception)
+        logging.exception(exception)
 
     def up_time(self):
         return time.time() - self.startTime
@@ -158,7 +158,6 @@ class QuoraBot(commands.Bot):
             )
             print("Going to leave", str(guild), guild.id)
             await guild.leave()
-
 
 intents = Intents(
     guild_messages=True,
