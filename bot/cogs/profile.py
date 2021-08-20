@@ -2,7 +2,7 @@ import logging
 from asyncio import TimeoutError
 from discord.ext import commands
 from aiohttp import ClientSession
-from quora import User
+from quora import User as QuoraUser
 from quora.exceptions import ProfileNotFoundError
 from bot.database import userprofile_api as api
 from discord_components import DiscordComponents, Button, Select, SelectOption
@@ -14,6 +14,16 @@ from bot.utils import (
     answers_embed,
     knows_about_embed,
 )
+
+class User(QuoraUser):
+    def profile(self, cache_exp=180):
+        return super().profile(self, cache_exp=cache_exp)
+
+    def knows_about(self, cache_exp=3600):
+        return super().knows_about(self, cache_exp=cache_exp)
+
+    def answers(self, cache_exp=300):
+        return super().answers(self, cache_exp=cache_exp)
 
 
 class Profile(commands.Cog):
@@ -74,7 +84,7 @@ class Profile(commands.Cog):
             await ctx.reply("Username or profile link is not valid")
             return
         try:
-            profile = await User(username).profile()
+            profile = await User(username, cache_manager=self.bot._cache).profile()
         except ProfileNotFoundError:
             self.bot.log(f"Error in set profile {username}.\nChannel:\n``` {ctx.channel.mention}\n{ctx.channel}{ctx.channel.id}\n{ctx.channel.guild}\n{ctx.author}")
             await ctx.reply("Username or profile link is not valid")
@@ -137,7 +147,7 @@ class Profile(commands.Cog):
         quora_username = await self.get_username(ctx, quora_username)
         if quora_username is None:
             return
-        user = User(quora_username, session=self._session)
+        user = User(quora_username, session=self._session, cache_manager = self.bot._cache)
         try:
             profile = await user.profile()
         except ProfileNotFoundError:
@@ -215,7 +225,7 @@ class Profile(commands.Cog):
         if quora_username is None:
             return
         try:
-            user = User(quora_username, session=self._session)
+            user = User(quora_username, session=self._session, cache_manager=self.bot._cache)
             profile = await user.profile()
         except ProfileNotFoundError:
             await ctx.reply(
@@ -238,7 +248,7 @@ class Profile(commands.Cog):
         if quora_username is None:
             return
         try:
-            user = User(quora_username, session=self._session)
+            user = User(quora_username, session=self._session, cache_manager=self.bot._cache)
             profile = await user.profile()
         except ProfileNotFoundError:
             await ctx.reply(
@@ -274,7 +284,7 @@ class Profile(commands.Cog):
         quora_username = await self.get_username(ctx, args)
         if quora_username is None:
             return
-        user = User(quora_username, session=self._session)
+        user = User(quora_username, session=self._session, cache_manager=self.bot._cache)
         profile = await user.profile()
         answers = await user.answers()
 
@@ -293,7 +303,7 @@ class Profile(commands.Cog):
         quora_username = await self.get_username(ctx, args)
         if quora_username is None:
             return
-        user = User(quora_username, session=self._session)
+        user = User(quora_username, session=self._session, cache_manager=self.bot._cache)
         profile = await user.profile()
         knows_about = await user.knows_about()
 

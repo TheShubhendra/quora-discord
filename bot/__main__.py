@@ -18,15 +18,18 @@ from .database import userprofile_api as uapi
 from .database import guild_api as gapi
 from .database import SESSION
 
-from quora.sync import User as User
+from quora.sync import User
 from discord_components import DiscordComponents
-
+import bmemcached
 
 TOKEN = config("TOKEN")
 OWNER_ID = int(config("OWNER_ID", None))
 LOGGING = int(config("LOGGING_LEVEL", 20))
 LOG_CHANNEL = int(config("LOG_CHANNEL", None))
-WATCHER = bool(int(config("WATCHER",1)))
+WATCHER = bool(int(config("WATCHER", 1)))
+MC_SERVERS = config("MEMCACHEDCLOUD_SERVERS")
+MC_USERNAME = config("MEMCACHEDCLOUD_USERNAME")
+MC_PASSWORD = config("MEMCACHEDCLOUD_PASSWORD")
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(message)s",
@@ -61,9 +64,18 @@ class QuoraBot(commands.Bot):
         self.startTime = time.time()
         self.log_channel_id = LOG_CHANNEL
         self.log_channel = None
+        self._cache = bmemcached.Client(
+            MC_SERVERS.split(","),
+            MC_USERNAME,
+            MC_PASSWORD,
+        )
+        self.logger = logging.getLogger("Bot")
 
     async def on_command_error(self, ctx, exception):
-        logging.exception(exception)
+        self.logger.exception(exception)
+        await self.log(exception)
+        await self.log(sys.exc_info())
+        await ctx.send("Something went wrong.")
 
     def up_time(self):
         return time.time() - self.startTime
@@ -185,14 +197,16 @@ for cog in glob.glob("bot/cogs/*.py"):
     bot.load_extension(cog[:-3].replace("/", "."))
 bot.load_module("/bot/modules/whandler.py", "whandler")
 
-@bot.listen('on_member_update')
+
+@bot.listen("on_member_update")
 async def update_member(old, new):
     logger.info(f"{new} Updated thier profile.")
     user = uapi.get_user(discord_id=old.id)
     if user is None:
         return
-    user.discord_username = new.name+"#"+str(new.discriminator)
+    user.discord_username = f"{new.name}#{str(new.discriminator)}"
     SESSION.commit()
+
 
 loop = asyncio.get_event_loop()
 
