@@ -175,7 +175,6 @@ class QuoraBot(commands.Bot):
             print("Going to leave", str(guild), guild.id)
             await guild.leave()
 
-
 intents = Intents(
     guild_messages=True,
     guilds=True,
@@ -203,7 +202,9 @@ bot.load_module("/bot/modules/whandler.py", "whandler")
 async def update_member(old, new):
     logger.info(f"{new} Updated thier profile.")
     user = uapi.get_user(discord_id=old.id)
-    user.discord_username = new.name + "#" + str(new.discriminator)
+    if user is None:
+        return
+    user.discord_username = f"{new.name}#{str(new.discriminator)}"
     SESSION.commit()
 
 
