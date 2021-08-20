@@ -1,7 +1,7 @@
 import logging
 from discord.ext import commands
 from aiohttp import ClientSession
-from quora import User
+from quora import User as QuoraUser
 from quora.exceptions import ProfileNotFoundError
 from bot.database import userprofile_api as api
 from discord_components import DiscordComponents, Button, Select, SelectOption
@@ -14,9 +14,16 @@ from bot.utils import (
     knows_about_embed,
 )
 
-class User(User):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs, cache_exp=60)
+class User(QuoraUser):
+    def profile(self, cache_exp=180):
+        return super().profile(self, cache_exp=cache_exp)
+
+    def knows_about(self, cache_exp=3600):
+        return super().knows_about(self, cache_exp=cache_exp)
+
+    def answers(self, cache_exp=300):
+        return super().answers(self, cache_exp=cache_exp)
+
 
 class Profile(commands.Cog):
     def __init__(self, bot):
