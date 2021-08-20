@@ -14,6 +14,9 @@ from bot.utils import (
     knows_about_embed,
 )
 
+class User(User):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs, cache_exp=60)
 
 class Profile(commands.Cog):
     def __init__(self, bot):
