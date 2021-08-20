@@ -158,6 +158,7 @@ class Profile(commands.Cog):
             await self.bot.log(
                 f"No Quora profile found with the username {quora_username}.\nChannel:\n``` {ctx.channel.mention}\n{ctx.channel}{ctx.channel.id}\n{ctx.channel.guild}\n{ctx.author}"
             )
+            return
         message = await ctx.send(
             embed=profile_embed(profile),
             components=self.components,
