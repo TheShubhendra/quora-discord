@@ -20,14 +20,17 @@ from .database import SESSION
 
 from quora.sync import User
 from discord_components import DiscordComponents
-from aiocache import Cache
+import bmemcached
+import traceback
 
 TOKEN = config("TOKEN")
 OWNER_ID = int(config("OWNER_ID", None))
 LOGGING = int(config("LOGGING_LEVEL", 20))
 LOG_CHANNEL = int(config("LOG_CHANNEL", None))
-WATCHER = bool(int(config("WATCHER",1)))
-REDIS_URL = config("REDIS_URL", None)
+WATCHER = bool(int(config("WATCHER", 1)))
+MC_SERVERS = config("MEMCACHEDCLOUD_SERVERS")
+MC_USERNAME = config("MEMCACHEDCLOUD_USERNAME")
+MC_PASSWORD = config("MEMCACHEDCLOUD_PASSWORD")
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(message)s",
@@ -62,10 +65,18 @@ class QuoraBot(commands.Bot):
         self.startTime = time.time()
         self.log_channel_id = LOG_CHANNEL
         self.log_channel = None
-        self._cache = Cache.from_url(REDIS_URL)
+        self._cache = bmemcached.Client(
+            MC_SERVERS.split(","),
+            MC_USERNAME,
+            MC_PASSWORD,
+        )
         self.logger = logging.getLogger("Bot")
+
     async def on_command_error(self, ctx, exception):
-        await ctx.send(exception)
+        self.logger.exception(exception)
+        await self.log(exception)
+        await self.log(sys.exc_info())
+        await ctx.send("Something went wrong.")
 
     def up_time(self):
         return time.time() - self.startTime
@@ -165,9 +176,7 @@ class QuoraBot(commands.Bot):
             print("Going to leave", str(guild), guild.id)
             await guild.leave()
 
-    async def on_command_error(self, ctx, error):
-        logger.exception(error)
-        await self.log(error)
+
 intents = Intents(
     guild_messages=True,
     guilds=True,
@@ -190,12 +199,14 @@ for cog in glob.glob("bot/cogs/*.py"):
     bot.load_extension(cog[:-3].replace("/", "."))
 bot.load_module("/bot/modules/whandler.py", "whandler")
 
-@bot.listen('on_member_update')
+
+@bot.listen("on_member_update")
 async def update_member(old, new):
     logger.info(f"{new} Updated thier profile.")
     user = uapi.get_user(discord_id=old.id)
-    user.discord_username = new.name+"#"+str(new.discriminator)
+    user.discord_username = new.name + "#" + str(new.discriminator)
     SESSION.commit()
+
 
 loop = asyncio.get_event_loop()
 

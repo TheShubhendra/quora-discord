@@ -6,5 +6,4 @@ psycopg2
 git+https://github.com/TheShubhendra/profile-watcher.git
 heroku3
 discord_components
-aiocache
-aioredis
+bmemcached
