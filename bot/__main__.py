@@ -21,6 +21,8 @@ from .database import SESSION
 from quora.sync import User
 from discord_components import DiscordComponents
 import bmemcached
+from aiohttp_proxy import ProxyConnector
+from aiohttp import ClientSession
 
 TOKEN = config("TOKEN")
 OWNER_ID = int(config("OWNER_ID", None))
@@ -30,6 +32,7 @@ WATCHER = bool(int(config("WATCHER", 1)))
 MC_SERVERS = config("MEMCACHEDCLOUD_SERVERS")
 MC_USERNAME = config("MEMCACHEDCLOUD_USERNAME")
 MC_PASSWORD = config("MEMCACHEDCLOUD_PASSWORD")
+PROXY_URL = config("QUOTAGUARD_URL")
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(message)s",
@@ -64,6 +67,8 @@ class QuoraBot(commands.Bot):
         self.startTime = time.time()
         self.log_channel_id = LOG_CHANNEL
         self.log_channel = None
+        self._proxy_connector = ProxyConnector.from_url(PROXY_URL)
+        self._session = None
         self._cache = bmemcached.Client(
             MC_SERVERS.split(","),
             MC_USERNAME,
@@ -126,6 +131,7 @@ class QuoraBot(commands.Bot):
                     user.quora_username,
                     update_interval=600,
                     data_dict=data,
+                    session=self._session,
                 )
 
     def load_module(self, file_path, module_name):
@@ -148,6 +154,7 @@ class QuoraBot(commands.Bot):
     async def on_ready(self):
         DiscordComponents(self)
         await self.inform("Boot up completed.")
+        self._session = ClientSession(connector=self._proxy_connector)
         if WATCHER:
             await self.load_watcher_data()
             loop = asyncio.get_running_loop()
