@@ -21,7 +21,6 @@ from .database import SESSION
 from quora.sync import User
 from discord_components import DiscordComponents
 import bmemcached
-import traceback
 
 TOKEN = config("TOKEN")
 OWNER_ID = int(config("OWNER_ID", None))
