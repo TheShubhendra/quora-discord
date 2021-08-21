@@ -4,8 +4,8 @@ from discord.ext import commands
 import discord
 from bot.utils import dev_embed, Embed, stats_embed, count_file_and_lines as count
 from bot.database import userprofile_api as api
-
-
+from discord_components import SelectOption, Select
+import logging
 BOT_INVITE_LINK = "https://discord.com/api/oauth2/authorize?client_id=838250557805821992&permissions=2147765312&scope=bot"
 
 SERVER_INVITE_LINK = "https://discord.gg/SEnqh73qYj"
@@ -14,7 +14,35 @@ SERVER_INVITE_LINK = "https://discord.gg/SEnqh73qYj"
 class General(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
+        self.select_options = [
+            SelectOption(
+                label="Latency",
+                value="ping",
+            ),
+            SelectOption(
+                label="Profile Picture",
+                value="pic",
+            ),
+            SelectOption(
+                label="Profile Bio",
+                value="bio",
+            ),
+            SelectOption(
+                label="Latest Answers",
+                value="answers",
+            ),
+            SelectOption(
+                label="Knows about",
+                value="knows",
+            ),
+        ]
+        self.logger = logging.getLogger(__name__)
+        self.components = [
+            Select(
+                placeholder="Select sections",
+                options=self.select_options,
+            )
+        ]
     @commands.command()
     async def ping(self, ctx):
         """Check bot latency."""
