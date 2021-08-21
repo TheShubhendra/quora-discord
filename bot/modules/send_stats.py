@@ -7,6 +7,7 @@ import logging
 
 TOPGG_TOKEN = config("TOPGG_TOKEN")
 DBL_TOKEN = config("DBL_TOKEN")
+CLIENT_ID = config("CLIENT_ID", None)
 
 bot.topggpy = topgg.DBLClient(bot, TOPGG_TOKEN)
 logger = logging.getLogger(__name__)
@@ -23,7 +24,7 @@ async def update_stats():
     try:
         async with ClientSession() as session:
             await session.post(
-                f"https://discordbotlist.com/api/v1/bots/{bot.client_id}/stats",
+                f"https://discordbotlist.com/api/v1/bots/{CLIENT_ID}/stats",
                 headers={
                     "Authorization": DBL_TOKEN,
                 },
