@@ -6,7 +6,7 @@ import logging
 
 
 TOPGG_TOKEN = config("TOPGG_TOKEN")
-DBL_TOKEN = cofig("DBL_TOKEN")
+DBL_TOKEN = config("DBL_TOKEN")
 
 bot.topggpy = topgg.DBLClient(bot, TOPGG_TOKEN)
 logger = logging.getLogger(__name__)
