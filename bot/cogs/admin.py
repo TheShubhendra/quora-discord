@@ -50,10 +50,12 @@ class Admin(commands.Cog):
             await ctx.send("You don't have permission to execute this command.")
             return
         guilds = self.bot.guilds
-        txt="```\n"
+        txt = "```\n"
         for i in guilds:
-            txt+=f"{i.id}  : {i}\n"
-        await ctx.reply(txt+"```", delete_after=30)
+            txt += f"{i.id}  : {i}\n"
+        await ctx.reply(txt + "```", delete_after=30)
+
+
 def setup(bot):
     cog = Admin(bot)
     bot.add_cog(cog)

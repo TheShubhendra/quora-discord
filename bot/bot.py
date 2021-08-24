@@ -15,6 +15,7 @@ from watcher import Watcher
 from .database import guild_api as gapi
 from .database import userprofile_api as uapi
 from .database import watcher_api as wapi
+from .utils.embeds import EmbedBuilder
 
 
 class QuoraBot(commands.Bot):
@@ -37,6 +38,7 @@ class QuoraBot(commands.Bot):
         self._cache = cache_client
         self.logger = logging.getLogger(__name__)
         self.run_watcher = run_watcher
+        self.embed = EmbedBuilder(self)
 
     async def on_command_error(
         self,
@@ -136,7 +138,7 @@ class QuoraBot(commands.Bot):
             loop.create_task(self.watcher.run())
             await self.log(
                 f"Boot up completed in {self.up_time} s."
-                "Running{len(self.watcher.updaters)} updaters."
+                f"Running{len(self.watcher.updaters)} updaters."
             )
 
     async def inform(self, information: str):

@@ -2,10 +2,11 @@ import asyncio
 import subprocess
 from discord.ext import commands
 import discord
-from bot.utils import dev_embed, Embed, stats_embed, count_file_and_lines as count
+from bot.utils import count_file_and_lines as count
 from bot.database import userprofile_api as api
 from discord_components import SelectOption, Select
 import logging
+
 BOT_INVITE_LINK = "https://discord.com/api/oauth2/authorize?client_id=838250557805821992&permissions=2147765312&scope=bot"
 
 SERVER_INVITE_LINK = "https://discord.gg/SEnqh73qYj"
@@ -14,6 +15,7 @@ SERVER_INVITE_LINK = "https://discord.gg/SEnqh73qYj"
 class General(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.embed = self.bot.embed
         self.select_options = [
             SelectOption(
                 label="Latency",
@@ -43,10 +45,11 @@ class General(commands.Cog):
                 options=self.select_options,
             )
         ]
+
     @commands.command()
     async def ping(self, ctx):
         """Check bot latency."""
-        embed = discord.Embed(colour=discord.Colour.dark_blue())
+        embed = self.embed.get_default(colour=discord.Colour.dark_blue())
         embed.add_field(
             name="Pong!",
             value=(f"Latency: {round(self.bot.latency * 1000)}ms"),
@@ -67,18 +70,18 @@ class General(commands.Cog):
     @commands.command(aliases=["dev"])
     async def developer(self, ctx):
         """Tells about developer"""
-        await ctx.send(embed=dev_embed())
+        await ctx.send(embed=self.embed.dev())
 
     @commands.command(aliases=["status"])
     async def stats(self, ctx):
         """Bot status."""
-        await ctx.send(embed=stats_embed(self.bot))
+        await ctx.send(embed=self.embed.stats())
 
     @commands.command(aliases=["lib"])
     async def libraries(self, ctx):
         """Installed Python libraries ."""
         libs = subprocess.check_output(["pip", "freeze"]).decode("ascii")
-        embed = Embed(
+        embed = self.embed.get_default(
             title="Python libraries",
             colour=discord.Colour.blue(),
         )

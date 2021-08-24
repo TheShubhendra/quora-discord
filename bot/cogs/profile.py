@@ -8,12 +8,8 @@ from bot.database import userprofile_api as api
 from discord_components import DiscordComponents, Button, Select, SelectOption
 from bot.utils import (
     extract_quora_username,
-    profile_embed,
-    profile_pic_embed,
-    profile_bio_embed,
-    answers_embed,
-    knows_about_embed,
 )
+
 
 class User(QuoraUser):
     def profile(self, cache_exp=180):
@@ -29,6 +25,7 @@ class User(QuoraUser):
 class Profile(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.embed = self.bot.embed
         self._session = None
         self.select_options = [
             SelectOption(
@@ -86,7 +83,9 @@ class Profile(commands.Cog):
         try:
             profile = await User(username, cache_manager=self.bot._cache).profile()
         except ProfileNotFoundError:
-            self.bot.log(f"Error in set profile {username}.\nChannel:\n``` {ctx.channel.mention}\n{ctx.channel}{ctx.channel.id}\n{ctx.channel.guild}\n{ctx.author}")
+            self.bot.log(
+                f"Error in set profile {username}.\nChannel:\n``` {ctx.channel.mention}\n{ctx.channel}{ctx.channel.id}\n{ctx.channel.guild}\n{ctx.author}"
+            )
             await ctx.reply("Username or profile link is not valid")
             return
         if api.does_user_exist(str(user_id), check_hidden=True):
@@ -96,7 +95,7 @@ class Profile(commands.Cog):
         else:
             api.add_user(
                 user_id,
-                user.name+"#"+str(user.discriminator),
+                user.name + "#" + str(user.discriminator),
                 username,
                 profile.followerCount,
                 profile.answerCount,
@@ -147,7 +146,9 @@ class Profile(commands.Cog):
         quora_username = await self.get_username(ctx, quora_username)
         if quora_username is None:
             return
-        user = User(quora_username, session=self._session, cache_manager = self.bot._cache)
+        user = User(
+            quora_username, session=self._session, cache_manager=self.bot._cache
+        )
         try:
             profile = await user.profile()
         except ProfileNotFoundError:
@@ -160,7 +161,7 @@ class Profile(commands.Cog):
             )
             return
         message = await ctx.send(
-            embed=profile_embed(profile),
+            embed=self.embed.profile(profile),
             components=self.components,
         )
         while True:
@@ -191,17 +192,17 @@ class Profile(commands.Cog):
                 continue
             selection = interaction.values[0]
             if selection == "profile":
-                embed = profile_embed(profile)
+                embed = self.embed.profile(profile)
             elif selection == "pic":
-                embed = profile_pic_embed(profile)
+                embed = self.embed.profile_pic(profile)
             elif selection == "bio":
-                embed == profile_bio_embed(profile)
+                embed == self.embed.profile_bio(profile)
             elif selection == "answers":
                 answers = await user.answers()
-                embed = answers_embed(profile, answers)
+                embed = self.embed.answers(profile, answers)
             elif selection == "knows":
                 knows_about = await user.knows_about()
-                embed = knows_about_embed(profile, knows_about)
+                embed = self.embed.knows_about(profile, knows_about)
             else:
                 continue
             try:
@@ -226,14 +227,16 @@ class Profile(commands.Cog):
         if quora_username is None:
             return
         try:
-            user = User(quora_username, session=self._session, cache_manager=self.bot._cache)
+            user = User(
+                quora_username, session=self._session, cache_manager=self.bot._cache
+            )
             profile = await user.profile()
         except ProfileNotFoundError:
             await ctx.reply(
                 f"No Quora profile found with the username `{quora_username}`."
             )
             return
-        await ctx.send(embed=profile_pic_embed(profile))
+        await ctx.send(embed=self.embed.profile_pic(profile))
 
     @commands.command(
         aliases=["profileBio", "intro"],
@@ -249,14 +252,16 @@ class Profile(commands.Cog):
         if quora_username is None:
             return
         try:
-            user = User(quora_username, session=self._session, cache_manager=self.bot._cache)
+            user = User(
+                quora_username, session=self._session, cache_manager=self.bot._cache
+            )
             profile = await user.profile()
         except ProfileNotFoundError:
             await ctx.reply(
                 f"No Quora profile found with the username `{quora_username}`."
             )
             return
-        embed = profile_bio_embed(profile)
+        embed = self.embed.profile_bio(profile)
         if embed is not None:
             await ctx.send(embed=embed)
         elif len(profile.profileBio) <= 1992:
@@ -285,11 +290,13 @@ class Profile(commands.Cog):
         quora_username = await self.get_username(ctx, args)
         if quora_username is None:
             return
-        user = User(quora_username, session=self._session, cache_manager=self.bot._cache)
+        user = User(
+            quora_username, session=self._session, cache_manager=self.bot._cache
+        )
         profile = await user.profile()
         answers = await user.answers()
 
-        embed = answers_embed(profile, answers)
+        embed = self.embed.answers(profile, answers)
         await ctx.reply(embed=embed)
 
     @commands.command(
@@ -304,11 +311,13 @@ class Profile(commands.Cog):
         quora_username = await self.get_username(ctx, args)
         if quora_username is None:
             return
-        user = User(quora_username, session=self._session, cache_manager=self.bot._cache)
+        user = User(
+            quora_username, session=self._session, cache_manager=self.bot._cache
+        )
         profile = await user.profile()
         knows_about = await user.knows_about()
 
-        embed = knows_about_embed(profile, knows_about)
+        embed = self.embed.knows_about(profile, knows_about)
         await ctx.reply(embed=embed)
 
 

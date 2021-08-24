@@ -11,10 +11,6 @@ from watcher import Watcher
 
 from .bot import QuoraBot
 from .database import SESSION, userprofile_api as uapi
-from .utils.embeds import (
-    bot_help_embed,
-    command_help_embed,
-)
 
 
 TOKEN = config("TOKEN")
@@ -53,13 +49,13 @@ class QuoraHelpCommand(commands.HelpCommand):
         mapping: Mapping,
     ):
         """Method to send help for all commands."""
-        embed = bot_help_embed(mapping)
+        embed = self.context.bot.embed.bot_help(mapping)
         await self.context.send(embed=embed)
 
     async def send_command_help(self, command: commands.Command):
         """Method to send help for a specific command."""
         destination = self.get_destination()
-        await destination.send(embed=command_help_embed(command))
+        await destination.send(embed=self.context.bot.embed.command_help(command))
 
 
 intents = Intents(
@@ -91,7 +87,7 @@ bot = QuoraBot(
 for cog in glob.glob("bot/cogs/*.py"):
     bot.load_extension(cog[:-3].replace("/", "."))
 bot.load_module("/bot/modules/whandler.py", "whandler")
-bot.load_module("/bot/modules/send_stats.py", "stats_handler")
+#bot.load_module("/bot/modules/send_stats.py", "stats_handler")
 
 
 @bot.listen("on_member_update")
