@@ -50,9 +50,7 @@ class EmbedBuilder:
         try:
             embed.add_field(
                 name="General⚙️",
-                value="**First Name:** {0.firstName}\n"+
-                 "**Last Name:** {0.lastName}\n**Crendential:** {0.profileCrendential}\n"+
-                 "**Contributing Space:** {0.contributingSpaceCount}".format(profile),
+                value="**First Name:** {0.firstName}\n**Last Name:** {0.lastName}\n**Crendential:** {0.profileCrendential}\n**Contributing Space:** {0.contributingSpaceCount}".format(profile),
             )
         except Exception as e:
             self.logger.exception(e)
