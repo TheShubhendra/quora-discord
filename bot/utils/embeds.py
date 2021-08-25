@@ -25,7 +25,6 @@ from quora import (
 
 from .misc import count_file_and_lines as count
 from .parser import create_profile_link
-from bot.database.userprofile_api import profile_count
 
 
 class EmbedBuilder:
@@ -51,9 +50,7 @@ class EmbedBuilder:
         try:
             embed.add_field(
                 name="General⚙️",
-                value="**First Name:** {0.firstName}\n"+
-                 "**Last Name:** {0.lastName}\n**Crendential:** {0.profileCrendential}\n"+
-                 "**Contributing Space:** {0.contributingSpaceCount}".format(profile),
+                value="**First Name:** {0.firstName}\n**Last Name:** {0.lastName}\n**Crendential:** {0.profileCrendential}\n**Contributing Space:** {0.contributingSpaceCount}".format(profile),
             )
         except Exception as e:
             self.logger.exception(e)
@@ -260,7 +257,7 @@ class EmbedBuilder:
         bot = self.bot
         embed.add_field(
             name="Basic Stats",
-            value=f"**Server Connected:** {len(bot.guilds)}\n**User Connected:** {len(bot.users)}\n**Total Commands:** {len(bot.commands)}\n**Linked profiles:** {profile_count()}",
+            value=f"**Server Connected:** {len(bot.guilds)}\n**User Connected:** {len(bot.users)}\n**Total Commands:** {len(bot.commands)}\n**Linked profiles:** {bot.db.profile_count()}",
         )
 
         embed.add_field(

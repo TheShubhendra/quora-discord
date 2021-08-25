@@ -1,8 +1,5 @@
 from discord.ext import commands
 import discord
-from ..database import guild_api as gapi
-from ..database import watcher_api as wapi
-from ..database import userprofile_api as uapi
 
 
 class Watcher(commands.Cog):
@@ -17,7 +14,7 @@ class Watcher(commands.Cog):
                 await ctx.reply("Only Admins can execute this command.")
                 return
             channel = ctx.message.channel_mentions[0]
-            gapi.set_update_channel(ctx.guild, channel.id)
+            self.bot.db.set_update_channel(ctx.guild, channel.id)
             await ctx.reply(
                 f"{channel.mention} has been successfully set as an update channel"
             )
@@ -26,17 +23,17 @@ class Watcher(commands.Cog):
     async def watch(self, ctx):
         """Add Quora profiles to watching list."""
         async with ctx.channel.typing():
-            if not uapi.does_user_exist(ctx.author.id):
+            if not self.bot.db.does_user_exist(ctx.author.id):
                 await ctx.reply("Please setup your profile first using `q!setup`.")
                 return
-            user = uapi.get_user(discord_id=ctx.author.id)
-            update_channel = gapi.get_update_channel(ctx.guild.id)
+            user = self.bot.db.get_user(discord_id=ctx.author.id)
+            update_channel = self.bot.db.get_update_channel(ctx.guild.id)
             if update_channel is None:
                 await ctx.reply(
                     "No channel is set update channel in this server.\nPlease ask admin to set the channel using `q!set_channel`."
                 )
                 return
-            if wapi.add_watcher(str(ctx.guild.id), user.user_id) is None:
+            if self.bot.db.add_watcher(str(ctx.guild.id), user.user_id) is None:
                 await ctx.reply(
                     f"You are alreay watching {user.quora_username} on this server."
                 )

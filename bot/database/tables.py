@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
 
-from . import Base
+Base = declarative_base()
 
 
 class Guild(Base):
@@ -63,6 +64,7 @@ class Quoran(Base):
 
 
 __all__ = [
+    Base,
     Guild,
     Watcher,
     Quoran,

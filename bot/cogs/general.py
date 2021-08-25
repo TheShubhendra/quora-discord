@@ -3,7 +3,6 @@ import subprocess
 from discord.ext import commands
 import discord
 from bot.utils import count_file_and_lines as count
-from bot.database import userprofile_api as api
 from discord_components import SelectOption, Select
 import logging
 

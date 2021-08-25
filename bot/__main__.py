@@ -10,9 +10,9 @@ from discord.ext import commands
 from watcher import Watcher
 
 from .bot import QuoraBot
-from .database import SESSION, userprofile_api as uapi
 
 
+DATABASE_URL = config("DATABASE_URL")
 TOKEN = config("TOKEN")
 OWNER_ID = int(config("OWNER_ID", None))
 LOGGING = int(config("LOGGING_LEVEL", 20))
@@ -81,6 +81,7 @@ bot = QuoraBot(
     watcher=Watcher(),
     log_channel_id=LOG_CHANNEL,
     cache_client=cache_client,
+    database_url=DATABASE_URL,
 )
 
 
@@ -94,7 +95,7 @@ bot.load_module("/bot/modules/send_stats.py", "stats_handler")
 async def update_member(old: Member, new: Member):
     """Listener to update Users's username."""
     logger.info(f"{new} Updated thier profile.")
-    user = uapi.get_user(discord_id=old.id)
+    user = bot.db.get_user(discord_id=old.id)
     if user is None:
         return
     user.discord_username = f"{new.name}#{str(new.discriminator)}"
