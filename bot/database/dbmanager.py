@@ -29,7 +29,7 @@ class DatabaseManager:
         self.base = Base
 
     def get_guild(self, guild_id: Union[int, str]):
-        return self.self.session.query(Guild).get(str(guild_id))
+        return self.session.query(Guild).get(str(guild_id))
 
     def get_update_channel(
         self,
@@ -48,10 +48,10 @@ class DatabaseManager:
         _guild = self.get_guild(guild.id)
         if _guild is None:
             _guild = Guild(guild.id, guild.name, update_channel)
-            self.self.session.add(_guild)
+            self.session.add(_guild)
         else:
             _guild.update_channel = update_channel
-        self.self.session.commit()
+        self.session.commit()
 
     def does_user_exist(
         self,
@@ -60,7 +60,7 @@ class DatabaseManager:
     ):
         if not check_hidden:
             return (
-                self.self.session.query(Quoran)
+                self.session.query(Quoran)
                 .filter(Quoran.discord_id == str(discord_id))
                 .filter(Quoran.access != "none")
                 .first()
@@ -68,7 +68,7 @@ class DatabaseManager:
             )
         else:
             return (
-                self.self.session.query(Quoran)
+                self.session.query(Quoran)
                 .filter(Quoran.discord_id == str(discord_id))
                 .first()
                 is not None

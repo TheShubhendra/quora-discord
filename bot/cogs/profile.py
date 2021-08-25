@@ -4,7 +4,6 @@ from discord.ext import commands
 from aiohttp import ClientSession
 from quora import User as QuoraUser
 from quora.exceptions import ProfileNotFoundError
-from bot.database import userprofile_api as api
 from discord_components import DiscordComponents, Button, Select, SelectOption
 from bot.utils import (
     extract_quora_username,
@@ -88,12 +87,12 @@ class Profile(commands.Cog):
             )
             await ctx.reply("Username or profile link is not valid")
             return
-        if api.does_user_exist(str(user_id), check_hidden=True):
-            api.update_quoran(
+        if self.bot.db.does_user_exist(str(user_id), check_hidden=True):
+            self.bot.db.update_quoran(
                 str(user_id), username, profile.followerCount, profile.answerCount
             )
         else:
-            api.add_user(
+            self.bot.db.add_user(
                 user_id,
                 user.name + "#" + str(user.discriminator),
                 username,
@@ -110,8 +109,8 @@ class Profile(commands.Cog):
     )
     async def remove(self, ctx):
         """Remove your Quora profile from bot."""
-        if api.does_user_exist(ctx.author.id):
-            api.update_access(ctx.author.id, "none")
+        if self.bot.db.does_user_exist(ctx.author.id):
+            self.bot.db.update_access(ctx.author.id, "none")
             await ctx.reply("Profile removed successfully.")
         else:
             await ctx.reply("No linked profile found.")
@@ -119,17 +118,17 @@ class Profile(commands.Cog):
     async def get_username(self, ctx, quora_username=None):
         if len(ctx.message.mentions) > 0:
             discord_id = ctx.message.mentions[0].id
-            if not api.does_user_exist(discord_id):
+            if not self.bot.db.does_user_exist(discord_id):
                 await ctx.reply("Mentioned user's username not found on database.")
                 return
-            quora_username = api.get_quora_username(discord_id)
+            quora_username = self.bot.db.get_quora_username(discord_id)
         elif quora_username is None:
-            if not api.does_user_exist(ctx.author.id):
+            if not self.bot.db.does_user_exist(ctx.author.id):
                 await ctx.send(
                     "Either setup your profile first or pass a username with the command."
                 )
                 return
-            quora_username = api.get_quora_username(ctx.author.id)
+            quora_username = self.bot.db.get_quora_username(ctx.author.id)
         return quora_username
 
     @commands.command(

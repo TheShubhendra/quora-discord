@@ -12,21 +12,19 @@ from discord_components import DiscordComponents
 from quora import User
 from watcher import Watcher
 
-from .database import guild_api as gapi
-from .database import userprofile_api as uapi
-from .database import watcher_api as wapi
+from .database import DatabaseManager
 from .utils.embeds import EmbedBuilder
 
 
 class QuoraBot(commands.Bot):
     """Custome Class for QuoraBot inherited from `discord.ext.commands.Bot`."""
-
     def __init__(
         self,
         *args,
         watcher: Watcher = None,
         log_channel_id: int = None,
         cache_client: bmemcached.Client = None,
+        database_url: str = None,
         run_watcher: bool = True,
         **kwargs,
     ) -> None:
@@ -39,6 +37,7 @@ class QuoraBot(commands.Bot):
         self.logger = logging.getLogger(__name__)
         self.run_watcher = run_watcher
         self.embed = EmbedBuilder(self)
+        self.db = DatabaseManager(database_url, self)
 
     async def on_command_error(
         self,
@@ -56,10 +55,10 @@ class QuoraBot(commands.Bot):
     async def load_watcher_data(self):
         self.watcher_list = {}
         for guild in self.guilds:
-            guild_watcher = wapi.get_guild_watcher(guild.id)
+            guild_watcher = self.db.get_guild_watcher(guild.id)
             for watcher in guild_watcher:
-                update_channel = gapi.get_update_channel(guild.id)
-                user = uapi.get_user(user_id=watcher.user_id)
+                update_channel = self.db.get_update_channel(guild.id)
+                user = self.db.get_user(user_id=watcher.user_id)
                 if user.quora_username not in self.watcher_list.keys():
                     data_dict = {
                         "user_id": user.user_id,
@@ -96,8 +95,8 @@ class QuoraBot(commands.Bot):
                 u = User(user.quora_username)
                 u = await u.profile()
 
-                uapi.update_follower_count(user.user_id, u.followerCount)
-                uapi.update_answer_count(user.user_id, u.answerCount)
+                self.db.update_follower_count(user.user_id, u.followerCount)
+                self.db.update_answer_count(user.user_id, u.answerCount)
                 self.watcher.add_quora(
                     user.quora_username,
                     update_interval=600,

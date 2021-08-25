@@ -25,7 +25,6 @@ from quora import (
 
 from .misc import count_file_and_lines as count
 from .parser import create_profile_link
-from bot.database.userprofile_api import profile_count
 
 
 class EmbedBuilder:
@@ -260,7 +259,7 @@ class EmbedBuilder:
         bot = self.bot
         embed.add_field(
             name="Basic Stats",
-            value=f"**Server Connected:** {len(bot.guilds)}\n**User Connected:** {len(bot.users)}\n**Total Commands:** {len(bot.commands)}\n**Linked profiles:** {profile_count()}",
+            value=f"**Server Connected:** {len(bot.guilds)}\n**User Connected:** {len(bot.users)}\n**Total Commands:** {len(bot.commands)}\n**Linked profiles:** {bot.db.profile_count()}",
         )
 
         embed.add_field(
