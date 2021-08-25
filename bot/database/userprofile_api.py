@@ -1,50 +1,8 @@
-from sqlalchemy import (
-    Column,
-    String,
-    Integer,
-)
-
 from . import (
-    BASE,
-    ENGINE,
     SESSION,
 )
 
-from decouple import config
-
-
-CREATE_TABLES = bool(int(config("CREATE_TABLES", 1)))
-
-
-class Quoran(BASE):
-    __tablename__ = "quoran"
-    user_id = Column(Integer, primary_key=True)
-    discord_id = Column(String(50))
-    discord_username = Column(String(100))
-    quora_username = Column(String(50))
-    follower_count = Column(Integer)
-    answer_count = Column(Integer)
-    access = Column(String(10))
-
-    def __init__(
-        self,
-        discord_id,
-        discord_username,
-        quora_username,
-        answer_count=0,
-        follower_count=0,
-        access="public",
-    ):
-        self.discord_id = discord_id
-        self.discord_username = discord_username
-        self.quora_username = quora_username
-        self.follower_count = follower_count
-        self.answer_count = answer_count
-        self.access = access
-
-
-if CREATE_TABLES:
-    BASE.metadata.create_all(ENGINE)
+from .tables import Quoran
 
 
 def does_user_exist(discord_id, check_hidden=False):

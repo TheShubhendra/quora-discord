@@ -1,28 +1,8 @@
-from sqlalchemy import Column, String, Integer
-
 from . import (
-    BASE,
-    ENGINE,
     SESSION,
 )
 
-
-class Watcher(BASE):
-    __tablename__ = "watcher_data"
-    id = Column(Integer, primary_key=True)
-    guild_id = Column(String(50))
-    user_id = Column(Integer)
-
-    def __init__(
-        self,
-        guild_id,
-        user_id,
-    ):
-        self.guild_id = guild_id
-        self.user_id = user_id
-
-
-BASE.metadata.create_all(ENGINE)
+from .tables import Watcher
 
 
 def get_guild_watcher(guild_id):
