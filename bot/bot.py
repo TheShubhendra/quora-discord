@@ -149,16 +149,3 @@ class QuoraBot(commands.Bot):
         if self.log_channel is None:
             self.log_channel = await self.fetch_channel(self.log_channel_id)
         await self.log_channel.send(f"```\n{data}\n```")
-
-    async def on_member_remove(
-        self,
-        member: discord.Member,
-    ):
-        if member.id == self.bot.owner_id:
-            guild = member.guild
-            await guild.system_channel.send(
-                "My Developer Shubhendra Sir left\
-the Server so I'm leaving too. Don't expect me back."
-            )
-            print("Going to leave", str(guild), guild.id)
-            await guild.leave()
