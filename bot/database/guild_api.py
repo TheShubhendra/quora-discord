@@ -1,33 +1,8 @@
-from sqlalchemy import (
-    Column,
-    String,
-)
-
 from . import (
-    BASE,
-    ENGINE,
     SESSION,
 )
 
-
-class Guild(BASE):
-    __tablename__ = "guild_data"
-    guild_id = Column(String(50), primary_key=True)
-    guild_name = Column(String(50))
-    update_channel = Column(String(50))
-
-    def __init__(
-        self,
-        guild_id,
-        guild_name,
-        update_channel,
-    ):
-        self.guild_id = guild_id
-        self.guild_name = guild_name
-        self.update_channel = update_channel
-
-
-BASE.metadata.create_all(ENGINE)
+from .tables import Guild
 
 
 def get_guild(guild_id):
