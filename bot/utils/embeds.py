@@ -92,6 +92,11 @@ class EmbedBuilder:
             )
         except Exception as e:
             self.logger.exception(e)
+            embed.set_author(
+                name=profile.username,
+                url=create_profile_link(profile.username),
+                icon_url=profile.profileImage,
+            )
         return embed
 
     def profile_bio(self, profile: Profile):

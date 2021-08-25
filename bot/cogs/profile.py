@@ -184,7 +184,7 @@ class Profile(commands.Cog):
             except Exception as e:
                 self.logger.exception(str(e))
                 continue
-            if interaction.user != ctx.author and interaction.user != self.bot.owner_id:
+            if interaction.user != ctx.author and interaction.user.id != self.bot.owner_id:
                 await interaction.respond(
                     content="You are not allowed to interact with this message.",
                 )
