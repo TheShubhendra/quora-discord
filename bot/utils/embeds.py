@@ -6,6 +6,7 @@ from typing import (
     Any,
     Dict,
     List,
+    Tuple,
 )
 
 import discord
@@ -16,12 +17,14 @@ from discord import (
 from discord.ext.commands import (
     Cog,
     Command,
-    )
+)
 from quora import (
     Profile,
     Answer,
     Topic,
 )
+
+from texttable import Texttable
 
 from .misc import count_file_and_lines as count
 from .parser import create_profile_link
@@ -50,7 +53,9 @@ class EmbedBuilder:
         try:
             embed.add_field(
                 name="General⚙️",
-                value="**First Name:** {0.firstName}\n**Last Name:** {0.lastName}\n**Crendential:** {0.profileCrendential}\n**Contributing Space:** {0.contributingSpaceCount}".format(profile),
+                value="**First Name:** {0.firstName}\n**Last Name:** {0.lastName}\n**Crendential:** {0.profileCrendential}\n**Contributing Space:** {0.contributingSpaceCount}".format(
+                    profile
+                ),
             )
         except Exception as e:
             self.logger.exception(e)
@@ -122,13 +127,12 @@ class EmbedBuilder:
             return None
         return embed
 
-
     def answers(self, profile: Profile, answers: List[Answer]) -> Embed:
         embed = Embed(
             title=profile.username,
             colour=Colour.random(),
         )
-    
+
         for answer in answers:
             embed.add_field(
                 name=str(answer.question),
@@ -192,7 +196,7 @@ class EmbedBuilder:
             embed.add_field(
                 name=getattr(cog, "qualified_name", "Other"),
                 value=cmd_str,
-                )
+            )
         embed.add_field(
             name=getattr(cog, "qualified_name", "Other"),
             value=cmd_str,
@@ -281,3 +285,30 @@ class EmbedBuilder:
             value=f"**Python:** {version.major}.{version.minor}.{version.micro}\n**discord.py:** {discord.__version__}\n**pip:** {pip.__version__}",
         )
         return embed
+
+    def quoran_list(
+        self,
+        q_list: List[Tuple[str, str, int, int]],
+    ):
+        embed = self.get_default(
+            title="Quorans registered with the bot in thi server.",
+            colour=Colour.random(),
+        )
+        table = Texttable()
+        table.set_deco(Texttable.HEADER)
+        table.set_cols_align(["l", "m", "m"])
+        table.set_cols_valign(["l", "m", "r"])
+        table.set_cols_dtype(["t", "i", "i"])
+        table.set_cols_width([35, 20, 20])
+        text = ""
+        table.add_row(["Name", "Follower", "Views"])
+        for name, u, f, v in q_list[:6]:
+            table.add_row([name, f, v])
+        print(table.draw())
+        print(len(embed))
+        return table.draw()
+        # embed.add_field(
+        #     name="List",
+        #     value=table.draw()+"\n",
+        # )
+        # return embed
