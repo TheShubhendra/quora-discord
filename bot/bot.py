@@ -3,6 +3,10 @@ import importlib
 import logging
 import os
 import sys
+from typing import (
+    List,
+    Union,
+)
 import time
 
 import bmemcached
@@ -18,6 +22,7 @@ from .utils.embeds import EmbedBuilder
 
 class QuoraBot(commands.Bot):
     """Custome Class for QuoraBot inherited from `discord.ext.commands.Bot`."""
+
     def __init__(
         self,
         *args,
@@ -26,6 +31,7 @@ class QuoraBot(commands.Bot):
         cache_client: bmemcached.Client = None,
         database_url: str = None,
         run_watcher: bool = True,
+        moderators_id: List[int] = [],
         **kwargs,
     ) -> None:
         super().__init__(*args, **kwargs)
@@ -38,6 +44,7 @@ class QuoraBot(commands.Bot):
         self.run_watcher = run_watcher
         self.embed = EmbedBuilder(self)
         self.db = DatabaseManager(database_url, self)
+        self.moderators_id = moderators_id
 
     async def on_command_error(
         self,
@@ -148,3 +155,13 @@ class QuoraBot(commands.Bot):
         if self.log_channel is None:
             self.log_channel = await self.fetch_channel(self.log_channel_id)
         await self.log_channel.send(f"```\n{data}\n```")
+
+    def is_moderator(self, member: Union[int, discord.Member]):
+        if isinstance(member, discord.Member):
+            member = member.id
+        return member in self.moderators_id or member == self.owner_id
+
+    def is_admin(self, member: Union[int, discord.Member]):
+        if isinstance(member, discord.Member):
+            member = member.id
+        return member == self.owner_id

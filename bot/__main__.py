@@ -21,6 +21,7 @@ WATCHER = bool(int(config("WATCHER", 1)))
 MC_SERVERS = config("MEMCACHEDCLOUD_SERVERS")
 MC_USERNAME = config("MEMCACHEDCLOUD_USERNAME")
 MC_PASSWORD = config("MEMCACHEDCLOUD_PASSWORD")
+MODERATORS_ID = config("MODERATORS_ID", "0")
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(message)s",
@@ -55,7 +56,9 @@ class QuoraHelpCommand(commands.HelpCommand):
     async def send_command_help(self, command: commands.Command):
         """Method to send help for a specific command."""
         destination = self.get_destination()
-        await destination.send(embed=self.context.bot.embed.command_help(command))
+        await destination.send(
+            embed=self.context.bot.embed.command_help(command)
+            )
 
 
 intents = Intents(
@@ -82,6 +85,12 @@ bot = QuoraBot(
     log_channel_id=LOG_CHANNEL,
     cache_client=cache_client,
     database_url=DATABASE_URL,
+    moderators_id=list(
+        map(
+            int,
+            MODERATORS_ID.split(","),
+        )
+    ),
 )
 
 
@@ -99,7 +108,7 @@ async def update_member(old: Member, new: Member):
     if user is None:
         return
     user.discord_username = f"{new.name}#{str(new.discriminator)}"
-    SESSION.commit()
+    self.session.commit()
 
 
 loop = asyncio.get_event_loop()
