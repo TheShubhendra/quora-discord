@@ -12,7 +12,12 @@ class Server(commands.Cog):
         self.logger = logging.getLogger(__name__)
         self.db = self.bot.db
 
-    @commands.command(name="list")
+    @commands.command(
+        name="list",
+        usage = "q!list",
+        help = "Use this command to list all Quorans registerd with the bot in this guild.",
+        brief = "List all the quorans of the Server.",
+        )
     async def quoran_list(self, ctx):
         guild = ctx.guild
         q_list = await self.generate_quorans_list(guild)
