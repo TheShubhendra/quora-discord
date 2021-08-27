@@ -108,7 +108,7 @@ async def update_member(old: Member, new: Member):
     if user is None:
         return
     user.discord_username = f"{new.name}#{str(new.discriminator)}"
-    self.session.commit()
+    bot.db.session.commit()
 
 
 loop = asyncio.get_event_loop()
