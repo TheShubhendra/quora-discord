@@ -12,6 +12,8 @@ HEROKU_APP_NAME = config("HEROKU_APP_NAME", None)
 class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.heroku_client = heroku3.from_key(HEROKU_API_KEY)
+        self.heroku_app = self.heroku_client.app(HEROKU_APP_NAME)
 
     @commands.command(
         aliases=["l", "log"],
@@ -19,9 +21,7 @@ class Admin(commands.Cog):
     )
     async def logs(self, ctx: commands.Context):
         await ctx.trigger_typing()
-        client = heroku3.from_key(HEROKU_API_KEY)
-        app = client.app(HEROKU_APP_NAME)
-        logs = app.get_log()
+        logs = self.heroku_app.get_log()
         if len(logs) > 1000:
             with open("logs.txt", "w") as log:
                 log.write(logs)
@@ -48,6 +48,11 @@ class Admin(commands.Cog):
         for i in guilds:
             txt += f"{i.id}  : {i}\n"
         await ctx.reply(txt + "```", delete_after=30)
+
+    @commands.command(hidden=True)
+    async def restart(self, ctx: commands.Context):
+        await ctx.reply("Going to restart the bot.")
+        self.heroku_app.restart()
 
     async def cog_check(self, ctx: commands.Context):
         if ctx.bot.is_moderator(ctx.author):
