@@ -57,7 +57,7 @@ class QuoraBot(commands.Bot, WatcherMixin):
     ) -> None:
         self.logger.exception(exception)
         await self.log(exception)
-        await ctx.send("Something went wrong.")
+        await ctx.send(exception)
 
     @property
     def up_time(self) -> float:

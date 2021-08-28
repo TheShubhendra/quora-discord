@@ -5,6 +5,9 @@ import heroku3
 import asyncio
 import os
 
+from ..utils.exceptions import NotBotModerator
+
+
 HEROKU_API_KEY = config("HEROKU_API_KEY", None)
 HEROKU_APP_NAME = config("HEROKU_APP_NAME", None)
 
@@ -58,7 +61,7 @@ class Admin(commands.Cog):
         if ctx.bot.is_moderator(ctx.author):
             return True
         else:
-            await ctx.reply(
+            raise NotBotModerator(
                 "This command can be used by owner or a bot moderator only."
             )
             return False
