@@ -33,6 +33,7 @@ class QuoraBot(commands.Bot, WatcherMixin):
         cache_client: bmemcached.Client = None,
         database_url: str = None,
         run_watcher: bool = True,
+        send_stats: bool = True,
         moderators_id: List[int] = [],
         session: ClientSession = None,
         **kwargs,
@@ -49,6 +50,7 @@ class QuoraBot(commands.Bot, WatcherMixin):
         self.db = DatabaseManager(database_url, self)
         self.moderators_id = moderators_id
         self._session = session
+        self.send_stats = send_stats
 
     async def on_command_error(
         self,

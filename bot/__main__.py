@@ -100,7 +100,8 @@ bot = QuoraBot(
 for cog in glob.glob("bot/cogs/*.py"):
     bot.load_extension(cog[:-3].replace("/", "."))
 bot.load_module("/bot/modules/whandler.py", "whandler")
-bot.load_module("/bot/modules/send_stats.py", "stats_handler")
+if SEND_STATS:
+    bot.load_module("/bot/modules/send_stats.py", "stats_handler")
 
 
 @bot.listen("on_member_update")
