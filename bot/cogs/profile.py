@@ -195,7 +195,7 @@ class Profile(commands.Cog):
             elif selection == "pic":
                 embed = self.embed.profile_pic(profile)
             elif selection == "bio":
-                embed == self.embed.profile_bio(profile)
+                embed = self.embed.profile_bio(profile)
             elif selection == "answers":
                 answers = await user.answers()
                 embed = self.embed.answers(profile, answers)
@@ -203,7 +203,7 @@ class Profile(commands.Cog):
                 knows_about = await user.knows_about()
                 embed = self.embed.knows_about(profile, knows_about)
             else:
-                continue
+                self.logger.info(selection)
             try:
                 await interaction.message.edit(
                     embed=embed,

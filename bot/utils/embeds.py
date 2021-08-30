@@ -17,6 +17,7 @@ from discord import (
 from discord.ext.commands import (
     Cog,
     Command,
+    CommandError,
 )
 from quora import (
     Profile,
@@ -121,10 +122,16 @@ class EmbedBuilder:
             )
         except Exception as e:
             self.logger.exception(e)
-        if len(profile.profileBio) <= 1024:
-            embed.add_field(name="Profile Bio", value=profile.profileBio)
-        else:
-            return None
+        self.logger.info(len (profile.profileBio))
+        if len(profile.profileBio) > 6000:
+            raise CommandError("Profile Bio is too large to send.")
+        text = profile.profileBio
+        num_of_fields = len(text)//1024 + 1
+        for i in range(num_of_fields):
+            embed.add_field(
+                name="Profile Bio" if i==0 else "\u0004",
+                value=text[i*1024:(i+1)*1024],
+                )
         return embed
 
     def answers(self, profile: Profile, answers: List[Answer]) -> Embed:
