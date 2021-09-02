@@ -17,7 +17,7 @@ TOKEN = config("TOKEN")
 OWNER_ID = int(config("OWNER_ID", None))
 LOGGING = int(config("LOGGING_LEVEL", 20))
 LOG_CHANNEL = int(config("LOG_CHANNEL", None))
-RUN_WATCHER = bool(int(config("WATCHER", 1)))
+RUN_WATCHER = bool(int(config("RUN_WATCHER", 1)))
 MC_SERVERS = config("MEMCACHEDCLOUD_SERVERS")
 MC_USERNAME = config("MEMCACHEDCLOUD_USERNAME")
 MC_PASSWORD = config("MEMCACHEDCLOUD_PASSWORD")
@@ -99,7 +99,9 @@ bot = QuoraBot(
 
 for cog in glob.glob("bot/cogs/*.py"):
     bot.load_extension(cog[:-3].replace("/", "."))
-bot.load_module("/bot/modules/whandler.py", "whandler")
+
+if RUN_WATCHER:
+    bot.load_module("/bot/modules/whandler.py", "whandler")
 if SEND_STATS:
     bot.load_module("/bot/modules/send_stats.py", "stats_handler")
 
