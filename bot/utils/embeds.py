@@ -239,7 +239,7 @@ class EmbedBuilder:
         for topic in knows_about:
             embed.add_field(
                 name=topic.name,
-                value=f"[{str(topic.userAnswersCount)} answers by {profile.firstName}]({topic.userAnswersUrl}) on **[{topic.name}]({topic.url})** (Followed by {topic.followerCount})",
+                value=f"{str(topic.userAnswersCount)} answers by {profile.firstName} on **[{topic.name}]({topic.url})** (Followed by {topic.followerCount})",
             )
         try:
             embed.set_thumbnail(url=str(profile.profileImage))
