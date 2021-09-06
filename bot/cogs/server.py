@@ -14,17 +14,17 @@ class Server(commands.Cog):
 
     @commands.command(
         name="list",
-        usage = "q!list",
-        help = "Use this command to list all Quorans registerd with the bot in this guild.",
-        brief = "List all the quorans of the Server.",
-        )
+        usage="q!list",
+        help="Use this command to list all Quorans registerd with the bot in this guild.",
+        brief="List all the quorans of the Server.",
+    )
     async def quoran_list(self, ctx):
         guild = ctx.guild
         q_list = await self.generate_quorans_list(guild)
         await ctx.reply(f"```\n{self.bot.embed.quoran_list(q_list)}\n```")
 
     async def generate_quorans_list(self, guild):
-        cache_key = "guild_quoran_list_"+ str(guild.id)
+        cache_key = "guild_quoran_list_" + str(guild.id)
         q_list = self.bot._cache.get(cache_key)
         if q_list is not None:
             return q_list
@@ -52,8 +52,9 @@ class Server(commands.Cog):
                         )
                     except:
                         self.logger.exception(f"Error in {username}")
-        self.bot._cache.set(cache_key, q_list,time=3600 )
+        self.bot._cache.set(cache_key, q_list, time=3600)
         return q_list
+
 
 def setup(bot):
     cog = Server(bot)

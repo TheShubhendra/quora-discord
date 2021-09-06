@@ -8,6 +8,7 @@ from discord_components import DiscordComponents, Button, Select, SelectOption
 from bot.utils import (
     extract_quora_username,
 )
+from bot.mixins import ProfileHelper
 
 
 class User(QuoraUser):
@@ -21,40 +22,13 @@ class User(QuoraUser):
         return super().answers(self, cache_exp=cache_exp)
 
 
-class Profile(commands.Cog):
+class Profile(ProfileHelper, commands.Cog):
     def __init__(self, bot):
+        super().__init__()
         self.bot = bot
         self.embed = self.bot.embed
         self._session = None
-        self.select_options = [
-            SelectOption(
-                label="General Profile",
-                value="profile",
-            ),
-            SelectOption(
-                label="Profile Picture",
-                value="pic",
-            ),
-            SelectOption(
-                label="Profile Bio",
-                value="bio",
-            ),
-            SelectOption(
-                label="Latest Answers",
-                value="answers",
-            ),
-            SelectOption(
-                label="Knows about",
-                value="knows",
-            ),
-        ]
         self.logger = logging.getLogger(__name__)
-        self.components = [
-            Select(
-                placeholder="Select sections",
-                options=self.select_options,
-            )
-        ]
 
     async def _create_session(self):
         self.logger.debug("Creating a session.")
@@ -115,22 +89,6 @@ class Profile(commands.Cog):
         else:
             await ctx.reply("No linked profile found.")
 
-    async def get_username(self, ctx, quora_username=None):
-        if len(ctx.message.mentions) > 0:
-            discord_id = ctx.message.mentions[0].id
-            if not self.bot.db.does_user_exist(discord_id):
-                await ctx.reply("Mentioned user's username not found on database.")
-                return
-            quora_username = self.bot.db.get_quora_username(discord_id)
-        elif quora_username is None:
-            if not self.bot.db.does_user_exist(ctx.author.id):
-                await ctx.send(
-                    "Either setup your profile first or pass a username with the command."
-                )
-                return
-            quora_username = self.bot.db.get_quora_username(ctx.author.id)
-        return quora_username
-
     @commands.command(
         aliases=["p"],
         name="profile",
@@ -159,6 +117,8 @@ class Profile(commands.Cog):
                 f"No Quora profile found with the username {quora_username}.\nChannel:\n``` {ctx.channel.mention}\n{ctx.channel}{ctx.channel.id}\n{ctx.channel.guild}\n{ctx.author}"
             )
             return
+        await self._generate_view(ctx, quora_username, "profile", "en")
+        return
         message = await ctx.send(
             embed=self.embed.profile(profile),
             components=self.components,
@@ -184,7 +144,10 @@ class Profile(commands.Cog):
             except Exception as e:
                 self.logger.exception(str(e))
                 continue
-            if interaction.user != ctx.author and interaction.user.id != self.bot.owner_id:
+            if (
+                interaction.user != ctx.author
+                and interaction.user.id != self.bot.owner_id
+            ):
                 await interaction.respond(
                     content="You are not allowed to interact with this message.",
                 )

@@ -65,7 +65,6 @@ class QuoraBot(commands.Bot, WatcherMixin):
     def up_time(self) -> float:
         return time.time() - self.startTime
 
-
     def load_module(
         self,
         file_path: str,
@@ -79,7 +78,6 @@ class QuoraBot(commands.Bot, WatcherMixin):
         sys.modules[module_name] = module
         spec.loader.exec_module(module)
 
-    
     async def on_ready(self):
         DiscordComponents(self)
         await self.inform("Boot up completed.")
