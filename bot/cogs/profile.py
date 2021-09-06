@@ -118,62 +118,6 @@ class Profile(ProfileHelper, commands.Cog):
             )
             return
         await self._generate_view(ctx, quora_username, "profile", "en")
-        return
-        message = await ctx.send(
-            embed=self.embed.profile(profile),
-            components=self.components,
-        )
-        while True:
-            try:
-                interaction = await self.bot.wait_for(
-                    "select_option",
-                    check=lambda i: i.message == message,
-                    timeout=30,
-                )
-            except TimeoutError:
-                await message.edit(
-                    components=[
-                        Select(
-                            placeholder="Select sections",
-                            options=self.select_options,
-                            disabled=True,
-                        )
-                    ]
-                )
-                return
-            except Exception as e:
-                self.logger.exception(str(e))
-                continue
-            if (
-                interaction.user != ctx.author
-                and interaction.user.id != self.bot.owner_id
-            ):
-                await interaction.respond(
-                    content="You are not allowed to interact with this message.",
-                )
-                continue
-            selection = interaction.values[0]
-            if selection == "profile":
-                embed = self.embed.profile(profile)
-            elif selection == "pic":
-                embed = self.embed.profile_pic(profile)
-            elif selection == "bio":
-                embed = self.embed.profile_bio(profile)
-            elif selection == "answers":
-                answers = await user.answers()
-                embed = self.embed.answers(profile, answers)
-            elif selection == "knows":
-                knows_about = await user.knows_about()
-                embed = self.embed.knows_about(profile, knows_about)
-            else:
-                self.logger.info(selection)
-            try:
-                await interaction.message.edit(
-                    embed=embed,
-                    components=self.components,
-                )
-            except:
-                self.logger.exception("Error")
 
     @commands.command(
         aliases=["picture", "pfp", "dp"],
@@ -198,7 +142,7 @@ class Profile(ProfileHelper, commands.Cog):
                 f"No Quora profile found with the username `{quora_username}`."
             )
             return
-        await ctx.send(embed=self.embed.profile_pic(profile))
+        await self._generate_view(ctx, quora_username, "pic", "en")
 
     @commands.command(
         aliases=["profileBio", "intro"],
@@ -223,21 +167,7 @@ class Profile(ProfileHelper, commands.Cog):
                 f"No Quora profile found with the username `{quora_username}`."
             )
             return
-        embed = self.embed.profile_bio(profile)
-        if embed is not None:
-            await ctx.send(embed=embed)
-        elif len(profile.profileBio) <= 1992:
-            await ctx.send("```\n" + profile.profileBio + "\n```")
-        else:
-            bio = profile.profileBio
-            while True:
-                if len(bio) >= 1500:
-                    await ctx.send("```\n" + bio[:1500] + "```\n")
-                elif len(bio) == 0:
-                    break
-                else:
-                    await ctx.send("```\n" + bio + "\n```")
-                bio = bio[1500:]
+        await self._generate_view(ctx, quora_username, "bio", "en")
 
     @commands.command(
         aliases=["a"],
@@ -250,16 +180,7 @@ class Profile(ProfileHelper, commands.Cog):
         if self._session is None:
             await self._create_session()
         quora_username = await self.get_username(ctx, args)
-        if quora_username is None:
-            return
-        user = User(
-            quora_username, session=self._session, cache_manager=self.bot._cache
-        )
-        profile = await user.profile()
-        answers = await user.answers()
-
-        embed = self.embed.answers(profile, answers)
-        await ctx.reply(embed=embed)
+        await self._generate_view(ctx, quora_username, "answers", "en")
 
     @commands.command(
         aliases=["knows_about", "k"],
@@ -271,16 +192,7 @@ class Profile(ProfileHelper, commands.Cog):
         if self._session is None:
             await self._create_session()
         quora_username = await self.get_username(ctx, args)
-        if quora_username is None:
-            return
-        user = User(
-            quora_username, session=self._session, cache_manager=self.bot._cache
-        )
-        profile = await user.profile()
-        knows_about = await user.knows_about()
-
-        embed = self.embed.knows_about(profile, knows_about)
-        await ctx.reply(embed=embed)
+        await self._generate_view(ctx, quora_username, "pic", "en")
 
 
 def setup(bot):

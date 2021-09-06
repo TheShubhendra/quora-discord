@@ -1,5 +1,6 @@
 from discord_components import DiscordComponents, Button, Select, SelectOption
 from quora import User as QuoraUser
+from discord.ext.commands import CommandError
 
 
 class User(QuoraUser):
@@ -52,7 +53,7 @@ class ProfileHelper:
             embed = self.embed.profile_pic(profile)
         elif view == "bio":
             embed = self.embed.profile_bio(profile)
-        elif embed == "answers":
+        elif view == "answers":
             answers = await user.answers(language)
             embed = self.embed.answers(profile, answers)
         elif view == "knows":
@@ -112,14 +113,14 @@ class ProfileHelper:
         if len(ctx.message.mentions) > 0:
             discord_id = ctx.message.mentions[0].id
             if not self.bot.db.does_user_exist(discord_id):
-                await ctx.reply("Mentioned user's username not found on database.")
-                return
+                raise CommandError(
+                    f"No Quora profile found related to {ctx.message.mentions[0]}"
+                )
             quora_username = self.bot.db.get_quora_username(discord_id)
         elif quora_username is None:
             if not self.bot.db.does_user_exist(ctx.author.id):
-                await ctx.send(
+                raise CommandError(
                     "Either setup your profile first or pass a username with the command."
                 )
-                return
             quora_username = self.bot.db.get_quora_username(ctx.author.id)
         return quora_username
