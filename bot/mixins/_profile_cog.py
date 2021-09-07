@@ -226,7 +226,7 @@ class ProfileHelper:
                 ],
             )
             return
-        # await self._setprofile(user, username, language) 
+        await self._setprofile(ctx.author, username, language)
         await message.edit(
             embed=self.bot.embed.get_default(
                 title="Profile linked successfully",
@@ -234,3 +234,19 @@ class ProfileHelper:
             ),
             components=[],
         )
+
+    async def _setprofile(self, user, username, language="en"):
+        profile = await User(username).profile(language)
+        user_id = user.id
+        if self.bot.db.does_user_exist(str(user_id), check_hidden=True):
+            self.bot.db.update_quoran(
+                str(user_id), username, profile.followerCount, profile.answerCount
+            )
+        else:
+            self.bot.db.add_user(
+                user_id,
+                user.name + "#" + str(user.discriminator),
+                username,
+                profile.followerCount,
+                profile.answerCount,
+            )

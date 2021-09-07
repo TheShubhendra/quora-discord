@@ -42,40 +42,10 @@ class Profile(ProfileHelper, commands.Cog):
     async def setprofile(
         self,
         ctx,
-        quora_username_or_profile_link,
-        user=None,
+        username=None,
     ):
         """Links your Quora profile."""
-        if user is None:
-            user = ctx.author
-        user_id = user.id
-        username = extract_quora_username(quora_username_or_profile_link)
-        if username is None:
-            await ctx.reply("Username or profile link is not valid")
-            return
-        try:
-            profile = await User(username, cache_manager=self.bot._cache).profile()
-        except ProfileNotFoundError:
-            self.bot.log(
-                f"Error in set profile {username}.\nChannel:\n``` {ctx.channel.mention}\n{ctx.channel}{ctx.channel.id}\n{ctx.channel.guild}\n{ctx.author}"
-            )
-            await ctx.reply("Username or profile link is not valid")
-            return
-        if self.bot.db.does_user_exist(str(user_id), check_hidden=True):
-            self.bot.db.update_quoran(
-                str(user_id), username, profile.followerCount, profile.answerCount
-            )
-        else:
-            self.bot.db.add_user(
-                user_id,
-                user.name + "#" + str(user.discriminator),
-                username,
-                profile.followerCount,
-                profile.answerCount,
-            )
-        await ctx.reply(
-            f"{user.mention}'s ' username {username} has been successfully updated in the database."
-        )
+        await self._setprofile_view(ctx, username)
 
     @commands.command(
         help="Use this command to remove your linked Quora profile with this bot.",
