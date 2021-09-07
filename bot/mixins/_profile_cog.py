@@ -7,6 +7,7 @@ from discord_components import (
     ButtonStyle,
 )
 from quora import User as QuoraUser
+from quora.user import subdomains
 from quora.exceptions import ProfileNotFoundError
 from discord.ext.commands import CommandError
 from bot.utils import extract_quora_username
@@ -55,7 +56,12 @@ class ProfileHelper:
         ]
 
     async def _get_embed(self, user, view, language="en"):
-        profile = await user.profile(language)
+        try:
+            profile = await user.profile(language)
+        except ProfileNotFoundError:
+            raise CommandError(
+                f"No profile found with the username {user.username} on Quora {subdomains[language]}"
+            )
         if view == "profile":
             embed = self.embed.profile(profile)
         elif view == "pic":
@@ -128,9 +134,26 @@ class ProfileHelper:
             quora_username = self.bot.db.get_quora_username(discord_id)
         elif quora_username is None:
             if not self.bot.db.does_user_exist(ctx.author.id):
-                raise CommandError(
-                    "Either setup your profile first or pass a username with the command."
+
+                async def callback(inter):
+                    await self._setprofile_view(ctx)
+
+                await ctx.send(
+                    embed=self.embed.get_default(
+                        title="Profile not found",
+                        description="No Quora profile linked with your account found. Please link your profile first or pass any username with the command.",
+                    ),
+                    components=[
+                        self.bot.components_manager.add_callback(
+                            Button(
+                                style=ButtonStyle.green,
+                                label="Link Quora profile",
+                            ),
+                            callback,
+                        )
+                    ],
                 )
+                return
             quora_username = self.bot.db.get_quora_username(ctx.author.id)
         return quora_username
 
@@ -169,9 +192,6 @@ class ProfileHelper:
             title="Set Profile",
             description="Please select the language",
         )
-
-        from quora.user import subdomains
-
         message = await ctx.send(
             embed=embed,
             components=[

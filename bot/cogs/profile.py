@@ -1,6 +1,7 @@
 import logging
 from asyncio import TimeoutError
 from discord.ext import commands
+from discord.ext.commands import CommandError
 from aiohttp import ClientSession
 from quora import User as QuoraUser
 from quora.exceptions import ProfileNotFoundError
@@ -73,20 +74,6 @@ class Profile(ProfileHelper, commands.Cog):
         quora_username = await self.get_username(ctx, quora_username)
         if quora_username is None:
             return
-        user = User(
-            quora_username, session=self._session, cache_manager=self.bot._cache
-        )
-        try:
-            profile = await user.profile()
-        except ProfileNotFoundError:
-            self.logger.exception("No profile found")
-            await ctx.reply(
-                f"No Quora profile found with the username `{quora_username}`."
-            )
-            await self.bot.log(
-                f"No Quora profile found with the username {quora_username}.\nChannel:\n``` {ctx.channel.mention}\n{ctx.channel}{ctx.channel.id}\n{ctx.channel.guild}\n{ctx.author}"
-            )
-            return
         await self._generate_view(ctx, quora_username, "profile", "en")
 
     @commands.command(
@@ -101,16 +88,6 @@ class Profile(ProfileHelper, commands.Cog):
             await self._create_session()
         quora_username = await self.get_username(ctx, args)
         if quora_username is None:
-            return
-        try:
-            user = User(
-                quora_username, session=self._session, cache_manager=self.bot._cache
-            )
-            profile = await user.profile()
-        except ProfileNotFoundError:
-            await ctx.reply(
-                f"No Quora profile found with the username `{quora_username}`."
-            )
             return
         await self._generate_view(ctx, quora_username, "pic", "en")
 
@@ -127,16 +104,6 @@ class Profile(ProfileHelper, commands.Cog):
         quora_username = await self.get_username(ctx, args)
         if quora_username is None:
             return
-        try:
-            user = User(
-                quora_username, session=self._session, cache_manager=self.bot._cache
-            )
-            profile = await user.profile()
-        except ProfileNotFoundError:
-            await ctx.reply(
-                f"No Quora profile found with the username `{quora_username}`."
-            )
-            return
         await self._generate_view(ctx, quora_username, "bio", "en")
 
     @commands.command(
@@ -150,6 +117,8 @@ class Profile(ProfileHelper, commands.Cog):
         if self._session is None:
             await self._create_session()
         quora_username = await self.get_username(ctx, args)
+        if quora_username is None:
+            return
         await self._generate_view(ctx, quora_username, "answers", "en")
 
     @commands.command(
