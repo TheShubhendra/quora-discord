@@ -1,6 +1,15 @@
-from discord_components import DiscordComponents, Button, Select, SelectOption
+from asyncio import TimeoutError
+from discord_components import (
+    DiscordComponents,
+    Button,
+    Select,
+    SelectOption,
+    ButtonStyle,
+)
 from quora import User as QuoraUser
+from quora.exceptions import ProfileNotFoundError
 from discord.ext.commands import CommandError
+from bot.utils import extract_quora_username
 
 
 class User(QuoraUser):
@@ -124,3 +133,104 @@ class ProfileHelper:
                 )
             quora_username = self.bot.db.get_quora_username(ctx.author.id)
         return quora_username
+
+    async def _setprofile_view(self, ctx, username=None):
+        if username is None:
+            message = await ctx.send(
+                embed=self.embed.get_default(
+                    title="Set Profile",
+                    description="Please send your Quora username or profile link in order to link your profile with the bot.",
+                )
+            )
+            while True:
+                try:
+                    msg = await self.bot.wait_for(
+                        "message",
+                        check=lambda x: x.author == ctx.author
+                        and x.channel == message.channel,
+                        timeout=20,
+                    )
+                except TimeoutError:
+                    await ctx.send(
+                        embed=self.embed.get_default(
+                            title="Time out",
+                            description=f"{ctx.author.mention} you failed to reply with your Quora username or profile link in given time",
+                        )
+                    )
+                    return
+                username = extract_quora_username(msg.content)
+                if username is None:
+                    await ctx.send("Please send valid username")
+                    continue
+                else:
+                    break
+
+        embed = self.embed.get_default(
+            title="Set Profile",
+            description="Please select the language",
+        )
+
+        from quora.user import subdomains
+
+        message = await ctx.send(
+            embed=embed,
+            components=[
+                Select(
+                    placeholder="Select language",
+                    options=[
+                        SelectOption(label=name, value=value)
+                        for value, name in subdomains.items()
+                    ],
+                )
+            ],
+        )
+        try:
+            interaction = await self.bot.wait_for(
+                "select_option",
+                check=lambda x: x.message == message and x.user == ctx.author,
+                timeout=30,
+            )
+        except TimeoutError:
+            await message.edit(
+                embed=embed,
+                components=[
+                    Select(
+                        placeholder="Selection time out",
+                        disabled=True,
+                        options=[SelectOption(label="raw", value="raw")],
+                    )
+                ],
+            )
+            return
+        language = interaction.values[0]
+        try:
+            profile = await User(username).profile(language)
+        except ProfileNotFoundError:
+
+            async def retry(inter):
+                await self._setprofile_view(ctx)
+
+            await message.edit(
+                embed=self.embed.get_default(
+                    title="Profile not found",
+                    description=f"No profile found with the username {username} on Quora {subdomains[language]}",
+                ),
+                components=[
+                    self.bot.components_manager.add_callback(
+                        Button(
+                            style=ButtonStyle.blue,
+                            label="Retry",
+                        ),
+                        retry,
+                    )
+                ],
+            )
+            return
+        # await self._setprofile(user, username, language) 
+        await message.edit(
+            embed=self.bot.embed.get_default(
+                title="Profile linked successfully",
+                description=f"{ctx.author.mention}'s Quora account with the username {username} has been successfully linked with the bot",
+            ),
+            components=[],
+        )
