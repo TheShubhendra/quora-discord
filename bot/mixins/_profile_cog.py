@@ -60,7 +60,7 @@ class ProfileHelper:
         except ProfileNotFoundError:
             raise CommandError(
                 f"No profile found with the username {user.username}\
-                on Quora {subdomains[language]}"
+on Quora {subdomains[language]}"
             )
         if view == "profile":
             embed = self.embed.profile(profile)
@@ -118,7 +118,7 @@ class ProfileHelper:
             ):
                 await interaction.respond(
                     content="You are not allowed\
-                    to interact with this message.",
+to interact with this message.",
                 )
                 continue
             selection = interaction.values[0]
@@ -137,7 +137,7 @@ class ProfileHelper:
             if not self.bot.db.does_user_exist(discord_id):
                 raise CommandError(
                     f"No Quora profile found\
-                    related to {ctx.message.mentions[0]}"
+related to {ctx.message.mentions[0]}"
                 )
             quora_username = self.bot.db.get_quora_username(discord_id)
         elif quora_username is None:
@@ -150,8 +150,8 @@ class ProfileHelper:
                     embed=self.embed.get_default(
                         title="Profile not found",
                         description="No Quora profile \
-                        linked with your account found.\
-                        Please link your profile first or pass any username with the command.",
+linked with your account found.\
+Please link your profile first or pass any username with the command.",
                     ),
                     components=[
                         self.bot.components_manager.add_callback(
@@ -384,7 +384,7 @@ class ProfileHelper:
                 await User(user.quora_username).profile(language)
             except ProfileNotFoundError:
                 await interaction.respond(
-                    f"No Quora profile found on Quora {language} with username {user.username}"
+                    f"No Quora profile found on Quora {language} with username {user.quora_username}"
                 )
                 continue
             break

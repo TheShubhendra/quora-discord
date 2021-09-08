@@ -47,7 +47,7 @@ class QuoraBot(commands.Bot, WatcherMixin):
         self.logger = logging.getLogger(__name__)
         self.run_watcher = run_watcher
         self.embed = EmbedBuilder(self)
-        self.db = DatabaseManager(database_url, self)
+        self.db = DatabaseManager(database_url)
         self.moderators_id = moderators_id
         self._session = session
         self.send_stats = send_stats
