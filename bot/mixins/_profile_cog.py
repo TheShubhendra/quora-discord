@@ -1,6 +1,5 @@
 from asyncio import TimeoutError
 from discord_components import (
-    DiscordComponents,
     Button,
     Select,
     SelectOption,
@@ -60,7 +59,8 @@ class ProfileHelper:
             profile = await user.profile(language)
         except ProfileNotFoundError:
             raise CommandError(
-                f"No profile found with the username {user.username} on Quora {subdomains[language]}"
+                f"No profile found with the username {user.username}\
+                on Quora {subdomains[language]}"
             )
         if view == "profile":
             embed = self.embed.profile(profile)
@@ -79,7 +79,13 @@ class ProfileHelper:
             raise ValueError(view)
         return embed
 
-    async def _generate_view(self, ctx, username, view="general", language="en"):
+    async def _generate_view(
+        self,
+        ctx,
+        username,
+        view="general",
+        language="en",
+    ):
         user = User(username)
         message = await ctx.send(
             embed=await self._get_embed(user, view, language),
@@ -111,7 +117,8 @@ class ProfileHelper:
                 and interaction.user.id != self.bot.owner_id
             ):
                 await interaction.respond(
-                    content="You are not allowed to interact with this message.",
+                    content="You are not allowed\
+                    to interact with this message.",
                 )
                 continue
             selection = interaction.values[0]
@@ -121,7 +128,7 @@ class ProfileHelper:
                     embed=embed,
                     components=self.components,
                 )
-            except:
+            except Exception:
                 self.logger.exception("Error")
 
     async def get_username(self, ctx, quora_username=None):
@@ -129,7 +136,8 @@ class ProfileHelper:
             discord_id = ctx.message.mentions[0].id
             if not self.bot.db.does_user_exist(discord_id):
                 raise CommandError(
-                    f"No Quora profile found related to {ctx.message.mentions[0]}"
+                    f"No Quora profile found\
+                    related to {ctx.message.mentions[0]}"
                 )
             quora_username = self.bot.db.get_quora_username(discord_id)
         elif quora_username is None:
@@ -141,7 +149,9 @@ class ProfileHelper:
                 await ctx.send(
                     embed=self.embed.get_default(
                         title="Profile not found",
-                        description="No Quora profile linked with your account found. Please link your profile first or pass any username with the command.",
+                        description="No Quora profile \
+                        linked with your account found.\
+                        Please link your profile first or pass any username with the command.",
                     ),
                     components=[
                         self.bot.components_manager.add_callback(
@@ -227,7 +237,7 @@ class ProfileHelper:
             return
         language = interaction.values[0]
         try:
-            profile = await User(username).profile(language)
+            await User(username).profile(language)
         except ProfileNotFoundError:
 
             async def retry(inter):
@@ -297,7 +307,7 @@ class ProfileHelper:
             elif inter.custom_id == "unlink":
                 await self._unlink_view(user, inter.message)
 
-        message = await ctx.send(
+        await ctx.send(
             embed=embed,
             components=[
                 [
@@ -330,7 +340,7 @@ class ProfileHelper:
         )
 
     async def _addlang_view(self, user, message):
-        msg = await message.edit(
+        await message.edit(
             embed=self.embed.get_default(
                 title="Add more languages",
                 description="Select the language to add",
@@ -370,7 +380,7 @@ class ProfileHelper:
                 return
             language = interaction.values[0]
             try:
-                profile = await User(user.quora_username).profile(language)
+                await User(user.quora_username).profile(language)
             except ProfileNotFoundError:
                 await interaction.respond(
                     f"No Quora profile found on Quora {language} with username {user.username}"

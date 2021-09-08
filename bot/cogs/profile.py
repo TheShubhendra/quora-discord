@@ -1,14 +1,7 @@
 import logging
-from asyncio import TimeoutError
 from discord.ext import commands
-from discord.ext.commands import CommandError
 from aiohttp import ClientSession
 from quora import User as QuoraUser
-from quora.exceptions import ProfileNotFoundError
-from discord_components import DiscordComponents, Button, Select, SelectOption
-from bot.utils import (
-    extract_quora_username,
-)
 from bot.mixins import ProfileHelper
 
 
