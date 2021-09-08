@@ -32,7 +32,7 @@ class Admin(commands.Cog):
                 await ctx.send(
                     file=File(log, filename="Heroku logs"),
                     delete_after=60,
-                    )
+                )
         else:
             await ctx.send(logs, delete_after=60)
         await asyncio.sleep(3)
