@@ -282,6 +282,7 @@ class ProfileHelper:
                 username,
                 profile.followerCount,
                 profile.answerCount,
+                language=language,
             )
 
     async def _manageprofile(

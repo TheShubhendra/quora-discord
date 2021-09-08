@@ -56,7 +56,7 @@ class DatabaseManager:
     def does_user_exist(
         self,
         discord_id: Union[int, str],
-        check_hidden: bool = False,
+        check_hidden: bool = True,
     ):
         if not check_hidden:
             return (
@@ -112,6 +112,7 @@ class DatabaseManager:
         quora_username: str,
         follower_count: int = None,
         answer_count: int = None,
+        language: str = "en",
         access: str = "public",
     ):
         quoran = Quoran(
