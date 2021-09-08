@@ -8,9 +8,10 @@ from typing import Union
 
 from .tables import (
     Base,
+    Profile,
     Guild,
-    Quoran,
     Watcher,
+    User,
 )
 
 
@@ -18,22 +19,20 @@ class DatabaseManager:
     def __init__(
         self,
         database_url: str,
-        bot: "QuoraBot",
         echo=False,
     ):
         self.database_url = database_url
-        self.bot = bot
         self.engine = create_engine(database_url, echo=echo)
         session_factory = sessionmaker(bind=self.engine)
         self.session = scoped_session(session_factory)
         self.base = Base
 
-    def get_guild(self, guild_id: Union[int, str]):
-        return self.session.query(Guild).get(str(guild_id))
+    def get_guild(self, guild_id: int):
+        return self.session.query(Guild).get(guild_id)
 
     def get_update_channel(
         self,
-        guild_id: Union[int, str],
+        guild_id: int,
     ):
         guild = self.get_guild(guild_id)
         if guild is not None:
@@ -43,11 +42,11 @@ class DatabaseManager:
     def set_update_channel(
         self,
         guild: Guild,
-        update_channel: Union[int, str],
+        update_channel: int,
     ):
         _guild = self.get_guild(guild.id)
         if _guild is None:
-            _guild = Guild(guild.id, guild.name, update_channel)
+            _guild = Guild(id=guild.id, name=guild.name, update_channel=update_channel)
             self.session.add(_guild)
         else:
             _guild.update_channel = update_channel
@@ -55,59 +54,49 @@ class DatabaseManager:
 
     def does_user_exist(
         self,
-        discord_id: Union[int, str],
+        discord_id: int,
         check_hidden: bool = True,
     ):
         if not check_hidden:
             return (
-                self.session.query(Quoran)
-                .filter(Quoran.discord_id == str(discord_id))
-                .filter(Quoran.access != "none")
+                self.session.query(User)
+                .filter(User.discord_id == discord_id)
+                .filter(User.access != "none")
                 .first()
                 is not None
             )
         else:
             return (
-                self.session.query(Quoran)
-                .filter(Quoran.discord_id == str(discord_id))
-                .first()
+                self.session.query(User).filter(User.discord_id == discord_id).first()
                 is not None
             )
 
     def delete_user(
         self,
-        discord_id: Union[int, str],
+        discord_id: int,
     ):
-        quoran = (
-            self.session.query(Quoran)
-            .filter(Quoran.discord_id == str(discord_id))
-            .first()
-        )
-        self.session.delete(quoran)
+        user = self.get_user(discord_id=discord_id)
+        self.session.delete_all(quoran.profiles)
+        self.session.delete_all(quoran)
         self.session.commit()
 
     def update_quoran(
         self,
-        discord_id: Union[int, str],
+        discord_id: int,
         username: str,
         followerCount: int,
         answerCount: int,
         access: str = "public",
     ):
-        user = (
-            self.session.query(Quoran)
-            .filter(Quoran.discord_id == str(discord_id))
-            .first()
-        )
+        user = self.get_user(discord_id=discord_id)
         user.quora_username = username
         user.access = access
         user.followerCount = followerCount
-        user.answerCount = answerCount
         self.session.commit()
 
     def add_user(
         self,
-        discord_id: Union[int, str],
+        discord_id: int,
         discord_username: str,
         quora_username: str,
         follower_count: int = None,
@@ -115,66 +104,61 @@ class DatabaseManager:
         language: str = "en",
         access: str = "public",
     ):
-        quoran = Quoran(
-            discord_id,
-            discord_username,
-            quora_username,
-            follower_count,
-            answer_count,
-            access,
+        quoran = User(
+            discord_id=discord_id,
+            discord_username=discord_username,
+            quora_username=quora_username,
+            follower_count=follower_count,
+            access=access,
         )
         self.session.add(quoran)
         self.session.commit()
 
     def get_quora_username(
         self,
-        discord_id: Union[int, str],
+        discord_id: int,
     ):
-        quoran = (
-            self.session.query(Quoran)
-            .filter(Quoran.discord_id == str(discord_id))
-            .first()
-        )
-        return quoran.quora_username
+        user = self.get_user(discord_id=discord_id)
+        return user.quora_username
 
     def get_user(
         self,
-        discord_id: Union[int, str] = None,
+        discord_id: int = None,
         user_id: int = None,
     ):
         if discord_id is not None:
-            quoran = (
-                self.session.query(Quoran)
-                .filter(Quoran.discord_id == str(discord_id))
-                .first()
+            user = (
+                self.session.query(User).filter(User.discord_id == discord_id).first()
             )
-            return quoran
+            return user
         if user_id is not None:
-            quoran = self.session.query(Quoran).get(user_id)
-            return quoran
+            user = self.session.query(User).get(user_id)
+            return user
 
     def update_access(
         self,
-        discord_id: Union[int, str],
+        discord_id: int,
         access: str,
     ):
-        quoran = (
-            self.session.query(Quoran)
-            .filter(Quoran.discord_id == str(discord_id))
-            .first()
-        )
+        user = self.get_user(discord_id=discord_id)
         quoran.access = access
         self.session.commit()
 
     def profile_count(self):
-        return self.session.query(Quoran).count()
+        return self.session.query(User).count()
 
     def update_answer_count(
         self,
         user_id: int,
         countChange: int,
+        language="en",
     ):
-        account = self.session.query(Quoran).get(user_id)
+        user = self.session.query(User).get(user_id)
+        account = (
+            self.session.query(Profile)
+            .filter(Profile.user_id == user_id)
+            .filter(Profile.language == language)
+        )
         if account.answer_count is None:
             account.answer_count = countChange
         else:
@@ -186,20 +170,18 @@ class DatabaseManager:
         user_id: int,
         countChange: int,
     ):
-        account = self.session.query(Quoran).get(user_id)
+        account = self.get_user(user_id=user_id)
         if account.follower_count is None:
             account.follower_count = 0
         account.follower_count += countChange
         self.session.commit()
 
-    def get_guild_watcher(self, guild_id: Union[int, str]):
-        return (
-            self.session.query(Watcher).filter(Watcher.guild_id == str(guild_id)).all()
-        )
+    def get_guild_watcher(self, guild_id: int):
+        return self.session.query(Watcher).filter(Watcher.guild_id == guild_id).all()
 
     def add_watcher(
         self,
-        guild_id: Union[int, str],
+        guild_id: int,
         user_id: int,
     ):
         watcher = (
