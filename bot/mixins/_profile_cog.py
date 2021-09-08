@@ -271,7 +271,7 @@ class ProfileHelper:
     async def _setprofile(self, user, username, language="en"):
         profile = await User(username).profile(language)
         user_id = user.id
-        if self.bot.db.does_user_exist(str(user_id), check_hidden=True):
+        if self.bot.db.does_user_exist(user_id):
             self.bot.db.update_quoran(
                 str(user_id), username, profile.followerCount, profile.answerCount
             )

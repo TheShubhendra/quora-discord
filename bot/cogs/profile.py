@@ -47,11 +47,12 @@ class Profile(ProfileHelper, commands.Cog):
     )
     async def remove(self, ctx):
         """Remove your Quora profile from bot."""
-        if self.bot.db.does_user_exist(ctx.author.id):
-            self.bot.db.update_access(ctx.author.id, "none")
-            await ctx.reply("Profile removed successfully.")
-        else:
-            await ctx.reply("No linked profile found.")
+        raise Exception("This command is temporarily disabled.")
+        # if self.bot.db.does_user_exist(ctx.author.id):
+        #     self.bot.db.update_access(ctx.author.id, "none")
+        #     await ctx.reply("Profile removed successfully.")
+        # else:
+        #     await ctx.reply("No linked profile found.")
 
     @commands.command(
         aliases=["p"],
