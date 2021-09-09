@@ -18,11 +18,11 @@ from quora import User
 from watcher import Watcher
 
 from .database import DatabaseManager
-from .mixins import WatcherMixin
+from .mixins import WatcherMixin, ObjectFactory
 from .utils.embeds import EmbedBuilder
 
 
-class QuoraBot(commands.Bot, WatcherMixin):
+class QuoraBot(commands.Bot, WatcherMixin, ObjectFactory):
     """Custome Class for QuoraBot inherited from `discord.ext.commands.Bot`."""
 
     def __init__(

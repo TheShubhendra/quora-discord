@@ -5,22 +5,10 @@ from discord_components import (
     SelectOption,
     ButtonStyle,
 )
-from quora import User as QuoraUser
 from quora.user import subdomains
 from quora.exceptions import ProfileNotFoundError
 from discord.ext.commands import CommandError
 from bot.utils import extract_quora_username
-
-
-class User(QuoraUser):
-    def profile(self, cache_exp=180):
-        return super().profile(self, cache_exp=cache_exp)
-
-    def knows_about(self, cache_exp=3600):
-        return super().knows_about(self, cache_exp=cache_exp)
-
-    def answers(self, cache_exp=300):
-        return super().answers(self, cache_exp=cache_exp)
 
 
 class ProfileHelper:
@@ -86,7 +74,7 @@ on Quora {subdomains[language]}"
         view="general",
         language="en",
     ):
-        user = User(username)
+        user = self.bot.get_quora(username)
         message = await ctx.send(
             embed=await self._get_embed(user, view, language),
             components=self.components,
@@ -237,7 +225,7 @@ Please link your profile first or pass any username with the command.",
             return
         language = interaction.values[0]
         try:
-            await User(username).profile(language)
+            await self.bot.get_quora(username).profile(language)
         except ProfileNotFoundError:
 
             async def retry(inter):
@@ -269,7 +257,7 @@ Please link your profile first or pass any username with the command.",
         )
 
     async def _setprofile(self, user, username, language="en"):
-        profile = await User(username).profile(language)
+        profile = await self.bot.get_quora(username).profile(language)
         user_id = user.id
         if self.bot.db.does_user_exist(user_id):
             self.bot.db.update_quoran(
@@ -381,7 +369,7 @@ Please link your profile first or pass any username with the command.",
                 return
             language = interaction.values[0]
             try:
-                await User(user.quora_username).profile(language)
+                await self.bot.get_quora(user.quora_username).profile(language)
             except ProfileNotFoundError:
                 await interaction.respond(
                     f"No Quora profile found on Quora {language} with username {user.quora_username}"

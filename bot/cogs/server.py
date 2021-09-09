@@ -3,8 +3,6 @@ import logging
 from discord.ext import commands
 from aiohttp import ClientSession
 
-from .profile import User
-
 
 class Server(commands.Cog):
     def __init__(self, bot):
@@ -37,7 +35,7 @@ class Server(commands.Cog):
                 if self.db.does_user_exist(member.id):
                     try:
                         username = self.db.get_quora_username(member.id)
-                        profile = await User(
+                        profile = await self.bot.get_user(
                             username,
                             session=session,
                             cache_manager=self.bot._cache,

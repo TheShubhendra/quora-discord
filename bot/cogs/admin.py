@@ -39,11 +39,16 @@ class Admin(commands.Cog):
         os.remove("logs.txt")
 
     @commands.command(hidden=True)
-    async def setp(self, ctx: commands.Context, arg1: str, arg2: str):
+    async def setp(self, ctx: commands.Context, arg1: str, arg2: str, arg3: str = "en"):
         cog = self.bot.get_cog("Profile")
         user = ctx.message.mentions[0]
-        await cog.setprofile(ctx, arg2, user=user)
-
+        await cog._setprofile(ctx.author, arg2, arg3)
+        await ctx.send(
+            embed=self.bot.embed.get_default(
+                title="Profile linked successfully",
+                description=f"{ctx.author.mention}'s Quora account with the username {arg2} has been successfully linked with the bot",
+            ),
+        )
     @commands.command(hidden=True)
     async def guilds(self, ctx: commands.Context):
         guilds = self.bot.guilds
