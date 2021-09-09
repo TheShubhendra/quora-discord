@@ -382,7 +382,7 @@ Please link your profile first or pass any username with the command.",
                 await self.bot.get_quora(user.quora_username).profile(language=language)
             except ProfileNotFoundError:
                 await interaction.respond(
-                    content=f"No Quora profile found on Quora {language} with username {user.quora_username}"
+                    content=f"No Quora profile found on Quora {subdomains[language]} with username {user.quora_username}"
                 )
                 continue
             break
@@ -390,7 +390,7 @@ Please link your profile first or pass any username with the command.",
         await message.edit(
             embed=self.bot.embed.get_default(
                 title="Language Added",
-                description=f"Quora {language} profile has been successfully linked to your account.",
+                description=f"Quora {subdomains[language]} profile has been successfully linked to your account.",
             ),
             components=[],
         )
