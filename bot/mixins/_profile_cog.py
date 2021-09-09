@@ -259,19 +259,13 @@ Please link your profile first or pass any username with the command.",
     async def _setprofile(self, user, username, language="en"):
         profile = await self.bot.get_quora(username).profile(language)
         user_id = user.id
-        if self.bot.db.does_user_exist(user_id):
-            self.bot.db.update_quoran(
-                str(user_id), username, profile.followerCount, profile.answerCount
-            )
-        else:
-            self.bot.db.add_user(
-                user_id,
-                user.name + "#" + str(user.discriminator),
-                username,
-                profile.followerCount,
-                profile.answerCount,
-                language=language,
-            )
+        user = self.bot.db.add_user(
+            user_id,
+            user.name + "#" + str(user.discriminator),
+            username,
+            profile.followerCount,
+        )
+        self.bot.db.add_profile(user, language=language)
 
     async def _manageprofile(
         self,
@@ -281,7 +275,9 @@ Please link your profile first or pass any username with the command.",
         user = self.bot.db.get_user(discord_id=ctx.author.id)
         if user is None:
             return
-        linked_languages = "1. **English**"  # In beta version
+        linked_languages = ""
+        for i,profile in enumerate(user.profiles):
+            linked_languages+=f"{i+1}. {subdomains[profile.language]}\n" 
         embed = self.embed.get_default(
             title="Profile Manager",
             description=f"Your Quora account with username {user.quora_username} is linked in following languages.\n"
@@ -368,15 +364,20 @@ Please link your profile first or pass any username with the command.",
                 )
                 return
             language = interaction.values[0]
+            if language in list(map(lambda x: x.language, user.profiles)):
+                await interaction.respond(
+                   content= "This language profile is already linked with Your account"
+                    )
+                continue
             try:
                 await self.bot.get_quora(user.quora_username).profile(language)
             except ProfileNotFoundError:
                 await interaction.respond(
-                    f"No Quora profile found on Quora {language} with username {user.quora_username}"
+                    content=f"No Quora profile found on Quora {language} with username {user.quora_username}"
                 )
                 continue
             break
-        # await self.addlanguage(user) for future use
+        self.bot.db.add_profile(user, language=language)
         await message.edit(
             embed=self.bot.embed.get_default(
                 title="Language Added",
