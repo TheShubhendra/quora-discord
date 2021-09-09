@@ -127,7 +127,7 @@ to interact with this message.",
                     f"No Quora profile found\
 related to {ctx.message.mentions[0]}"
                 )
-            quora_username = self.bot.db.get_quora_username(discord_id)
+            return self.bot.db.get_user(discord_id)
         elif quora_username is None:
             if not self.bot.db.does_user_exist(ctx.author.id):
 
@@ -152,7 +152,7 @@ Please link your profile first or pass any username with the command.",
                     ],
                 )
                 return
-            quora_username = self.bot.db.get_quora_username(ctx.author.id)
+            return self.bot.db.get_user(ctx.author.id)
         return quora_username
 
     async def _setprofile_view(self, ctx, username=None, manage=True):
