@@ -51,12 +51,8 @@ class Profile(ProfileHelper, commands.Cog):
     )
     async def fetch_profile(self, ctx, quora_username=None):
         """Gives details of any Quora profile."""
-        if self._session is None:
-            await self._create_session()
-        quora_username = await self.get_username(ctx, quora_username)
-        if quora_username is None:
-            return
-        await self._generate_view(ctx, quora_username, "profile", "en")
+        user_or_username = await self.get_username(ctx, quora_username)
+        await self._generate_view(ctx, user_or_username, "profile", "en")
 
     @commands.command(
         aliases=["picture", "pfp", "dp"],
@@ -66,11 +62,7 @@ class Profile(ProfileHelper, commands.Cog):
     )
     async def pic(self, ctx, args=None):
         """Show the profile picture of Quora profile."""
-        if self._session is None:
-            await self._create_session()
         quora_username = await self.get_username(ctx, args)
-        if quora_username is None:
-            return
         await self._generate_view(ctx, quora_username, "pic", "en")
 
     @commands.command(
@@ -81,12 +73,8 @@ class Profile(ProfileHelper, commands.Cog):
     )
     async def bio(self, ctx, args=None):
         """Show the profile bio of Quora user."""
-        if self._session is None:
-            await self._create_session()
-        quora_username = await self.get_username(ctx, args)
-        if quora_username is None:
-            return
-        await self._generate_view(ctx, quora_username, "bio", "en")
+        user_or_username = await self.get_username(ctx, args)
+        await self._generate_view(ctx, user_or_username, "bio", "en")
 
     @commands.command(
         aliases=["a"],
@@ -96,12 +84,8 @@ class Profile(ProfileHelper, commands.Cog):
     )
     async def answers(self, ctx, args=None):
         """Shows pinned and recent answers."""
-        if self._session is None:
-            await self._create_session()
-        quora_username = await self.get_username(ctx, args)
-        if quora_username is None:
-            return
-        await self._generate_view(ctx, quora_username, "answers", "en")
+        user_or_username = await self.get_username(ctx, args)
+        await self._generate_view(ctx, user_or_username, "answers", "en")
 
     @commands.command(
         aliases=["knows_about", "k"],
@@ -110,10 +94,8 @@ class Profile(ProfileHelper, commands.Cog):
         brief="Fetch knows about section.",
     )
     async def knows(self, ctx, args=None):
-        if self._session is None:
-            await self._create_session()
-        quora_username = await self.get_username(ctx, args)
-        await self._generate_view(ctx, quora_username, "pic", "en")
+        user_or_username = await self.get_username(ctx, args)
+        await self._generate_view(ctx, user_or_username, "pic", "en")
 
 
 def setup(bot):

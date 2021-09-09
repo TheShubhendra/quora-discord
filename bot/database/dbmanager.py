@@ -100,19 +100,18 @@ class DatabaseManager:
         discord_username: str,
         quora_username: str,
         follower_count: int = None,
-        answer_count: int = None,
-        language: str = "en",
         access: str = "public",
     ):
-        quoran = User(
+        user = User(
             discord_id=discord_id,
             discord_username=discord_username,
             quora_username=quora_username,
             follower_count=follower_count,
             access=access,
         )
-        self.session.add(quoran)
+        self.session.add(user)
         self.session.commit()
+        return user
 
     def get_quora_username(
         self,
@@ -134,6 +133,31 @@ class DatabaseManager:
         if user_id is not None:
             user = self.session.query(User).get(user_id)
             return user
+
+    def add_profile(
+        self,
+        user,
+        answer_count=None,
+        language="en",
+    ):
+        if isinstance(user, User):
+            if not any([p.language==language for p in user.profiles]):
+                user.profiles.append(
+                    Profile(
+                        language=language,
+                        answer_count=answer_count,
+                        )
+                    )
+            else:
+                raise Exception("Profile already linked on this language")
+        elif isinstance(user, int):
+            self.session.add(
+                Profile(
+                    user_id=user,
+                    language=language,
+                    )
+                )
+        self.session.commit()
 
     def update_access(
         self,
