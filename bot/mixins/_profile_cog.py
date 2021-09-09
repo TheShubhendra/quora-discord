@@ -75,7 +75,7 @@ on Quora {subdomains[language]}"
         language="en",
     ):
         if isinstance(user_or_username, str):
-            user = self.bot.get_quora(username)
+            user = self.bot.get_quora(user_or_username)
         elif user_or_username is None:
             return
         else:

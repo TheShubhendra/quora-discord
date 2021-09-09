@@ -49,10 +49,10 @@ class Profile(ProfileHelper, commands.Cog):
         usage="q!profile\nq!profile Shubhendra-Kushwaha-1\nq!profile <@72863363373337>",
         brief="Fetch a Quora profile.",
     )
-    async def fetch_profile(self, ctx, quora_username=None):
+    async def fetch_profile(self, ctx, quora_username=None, language="en"):
         """Gives details of any Quora profile."""
         user_or_username = await self.get_username(ctx, quora_username)
-        await self._generate_view(ctx, user_or_username, "profile", "en")
+        await self._generate_view(ctx, user_or_username, "profile", language)
 
     @commands.command(
         aliases=["picture", "pfp", "dp"],
@@ -60,10 +60,10 @@ class Profile(ProfileHelper, commands.Cog):
         usage="q!pic\nq!pic Shubhendra-Kushwaha-1\nq!pic <@72863363373337>",
         brief="Fetch profile picture of a Quora profile.",
     )
-    async def pic(self, ctx, args=None):
+    async def pic(self, ctx, args=None, language="en"):
         """Show the profile picture of Quora profile."""
         quora_username = await self.get_username(ctx, args)
-        await self._generate_view(ctx, quora_username, "pic", "en")
+        await self._generate_view(ctx, quora_username, "pic", language)
 
     @commands.command(
         aliases=["profileBio", "intro"],
@@ -71,10 +71,10 @@ class Profile(ProfileHelper, commands.Cog):
         usage="q!bio\nq!bio Shubhendra-Kushwaha-1\nq!bio <@72863363373337>",
         brief="Fetch the profile bio of a Quora profile",
     )
-    async def bio(self, ctx, args=None):
+    async def bio(self, ctx, args=None, language="en"):
         """Show the profile bio of Quora user."""
         user_or_username = await self.get_username(ctx, args)
-        await self._generate_view(ctx, user_or_username, "bio", "en")
+        await self._generate_view(ctx, user_or_username, "bio", language)
 
     @commands.command(
         aliases=["a"],
@@ -82,10 +82,10 @@ class Profile(ProfileHelper, commands.Cog):
         usage="q!answers\nq!answers Shubhendra-Kushwaha-1\nq!profile <@72863363373337>",
         brief="Fetch pinned and recent answers",
     )
-    async def answers(self, ctx, args=None):
+    async def answers(self, ctx, args=None, language="en"):
         """Shows pinned and recent answers."""
         user_or_username = await self.get_username(ctx, args)
-        await self._generate_view(ctx, user_or_username, "answers", "en")
+        await self._generate_view(ctx, user_or_username, "answers", language)
 
     @commands.command(
         aliases=["knows_about", "k"],
@@ -95,7 +95,7 @@ class Profile(ProfileHelper, commands.Cog):
     )
     async def knows(self, ctx, args=None):
         user_or_username = await self.get_username(ctx, args)
-        await self._generate_view(ctx, user_or_username, "pic", "en")
+        await self._generate_view(ctx, user_or_username, "pic", language)
 
 
 def setup(bot):
