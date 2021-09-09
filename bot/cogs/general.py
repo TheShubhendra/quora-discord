@@ -5,7 +5,7 @@ import discord
 from bot.utils import count_file_and_lines as count
 from discord_components import SelectOption, Select
 import logging
-
+from quora.user import subdomains
 BOT_INVITE_LINK = "https://discord.com/api/oauth2/authorize?client_id=838250557805821992&permissions=2147765312&scope=bot"
 
 SERVER_INVITE_LINK = "https://discord.gg/SEnqh73qYj"
@@ -75,6 +75,19 @@ class General(commands.Cog):
     async def stats(self, ctx):
         """Bot status."""
         await ctx.send(embed=self.embed.stats())
+
+    @commands.command(aliases=["language","lang"])
+    async def langs(self, ctx):
+        """Get the languages and codes."""
+        string = ""
+        for i,j in subdomains.items():
+            string+=f"{i} : {j}\n"
+        await ctx.send(
+            embed=self.embed.get_default(
+                title="Quora languages",
+                description=string,
+                )
+            )
 
     @commands.command(aliases=["lib"])
     async def libraries(self, ctx):
