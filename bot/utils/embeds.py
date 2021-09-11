@@ -306,7 +306,7 @@ class EmbedBuilder:
         table.set_cols_align(["l", "m", "m"])
         table.set_cols_valign(["l", "m", "r"])
         table.set_cols_dtype(["t", "i", "i"])
-        table.set_cols_width([25, 8, 8])
+        table.set_cols_width([23, 5, 10])
         text = ""
         table.add_row(["Name", "Follower", "Views"])
         for name, u, f, v in q_list:

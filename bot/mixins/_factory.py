@@ -1,5 +1,5 @@
 from quora import User
-
+from aiohttp import ClientSession
 
 class QuoraUser(User):
     def profile(self, *args, cache_exp=180, **kwargs):
@@ -13,10 +13,12 @@ class QuoraUser(User):
 
 
 class ObjectFactory:
-    def get_quora(self, username):
+    def get_quora(self, username, *args, **kwargs):
+        if self._session is None:
+            self._session = ClientSession()
         self.logger.info(f"Generating User object for {username} ")
         return QuoraUser(
             username,
             cache_manager=self._cache,
-            # session=self._session,
+            session=self._session,
         )
