@@ -49,6 +49,7 @@ class Admin(commands.Cog):
                 description=f"{ctx.author.mention}'s Quora account with the username {arg2} has been successfully linked with the bot",
             ),
         )
+
     @commands.command(hidden=True)
     async def guilds(self, ctx: commands.Context):
         guilds = self.bot.guilds
@@ -70,6 +71,50 @@ class Admin(commands.Cog):
                 "This command can be used by owner or a bot moderator only."
             )
             return False
+
+    async def get_channel(self, guild):
+        if guild.system_channel:
+            return guild.system_channel
+        messages = []
+        for i in guild.text_channels:
+            if i.last_message_id is None:
+                continue
+            msg = await i.fetch_message(i.last_message_id)
+            messages.append(msg)
+        channels = list(
+            map(
+                lambda m: m.channel,
+                sorted(messages, key=lambda i: i.created_at, reverse=True),
+            )
+        )
+        for channel in channels:
+            perms = channel.permissions_for(channel.guild.me)
+            if perms.send_messages:
+                return channel
+
+    @commands.Cog.listener(name="on_member_remove")
+    async def leave(self, member):
+        if not self.bot.is_admin(member):
+            return
+        channel = await self.get_channel(member.guild)
+        txt = "ldftttt"
+        try:
+            await channel.send(txt)
+            await self.bot.log(f"Sent Admin leave message to {channel} {channel.guild}")
+        except Exception as e:
+            await self.log(e)
+
+    @commands.Cog.listener(name="on_member_join")
+    async def join(self, member):
+        if not self.bot.is_admin(member):
+            return
+        channel = await self.get_channel(member.guild)
+        txt = "jijeefff"
+        try:
+            await channel.send(txt)
+            await self.bot.log(f"Sent Admin join message to {channel} {channel.guild}")
+        except Exception as e:
+            await self.log(e)
 
 
 def setup(bot):
