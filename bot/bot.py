@@ -9,6 +9,7 @@ from typing import (
 )
 import time
 
+import aioredis
 from aiohttp import ClientSession
 import bmemcached
 import discord
@@ -32,6 +33,7 @@ class QuoraBot(commands.Bot, WatcherMixin, ObjectFactory):
         log_channel_id: int = None,
         cache_client: bmemcached.Client = None,
         database_url: str = None,
+        redis_url: str = None,
         run_watcher: bool = True,
         send_stats: bool = True,
         moderators_id: List[int] = [],
@@ -48,6 +50,7 @@ class QuoraBot(commands.Bot, WatcherMixin, ObjectFactory):
         self.run_watcher = run_watcher
         self.embed = EmbedBuilder(self)
         self.db = DatabaseManager(database_url)
+        self.redis = aioredis.from_url(redis_url)
         self.moderators_id = moderators_id
         self._session = session
         self.send_stats = send_stats
@@ -88,6 +91,17 @@ command: {ctx.message.id} {ctx.message.content}
 
     async def on_ready(self):
         DiscordComponents(self)
+        @self.after_invoke
+        async def record_command(ctx):  # pylint: disable=W0612
+            x = await self.redis.hincrby(
+                f"command:user:{ctx.author.id}",
+                ctx.command.name,
+                )
+            await self.redis.hincrby(
+                f"command:guild:{ctx.guild.id}",
+                ctx.command.name,
+                )
+                
         await self.inform("Boot up completed.")
         if self.run_watcher:
             await self.load_watcher_data()

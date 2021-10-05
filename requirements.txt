@@ -1,5 +1,6 @@
 discord.py==1.7.3
 python-decouple
+aioredis
 git+https://github.com/TheShubhendra/pyquora.git
 sqlalchemy==1.3.22
 texttable

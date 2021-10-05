@@ -13,6 +13,7 @@ from .bot import QuoraBot
 
 
 DATABASE_URL = config("DATABASE_URL")
+REDIS_URL = config("REDIS_URL")
 TOKEN = config("TOKEN")
 OWNER_ID = int(config("OWNER_ID", None))
 LOGGING = int(config("LOGGING_LEVEL", 20))
@@ -86,6 +87,7 @@ bot = QuoraBot(
     log_channel_id=LOG_CHANNEL,
     cache_client=cache_client,
     database_url=DATABASE_URL,
+    redis_url=REDIS_URL,
     run_watcher=RUN_WATCHER,
     send_stats=SEND_STATS,
     moderators_id=list(
