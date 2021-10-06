@@ -1,6 +1,6 @@
 from typing import Optional
 from discord.ext import commands
-from discord import File, User
+from discord import File, User, Embed
 from decouple import config
 import heroku3
 import asyncio
@@ -103,24 +103,44 @@ class Admin(commands.Cog):
         if not self.bot.is_admin(member):
             return
         channel = await self.get_channel(member.guild)
-        txt = "ldftttt"
+        txt = "I am sorry to say \
+that my developer Shubhendra Kushwaha \
+didn't feel good here and left the server \n(╥﹏╥)."
         try:
-            await channel.send(txt)
+            embed = Embed(
+                title="Shubhendra Sir left",
+                description=txt,
+            )
+            embed.set_image(
+                url="https://cdn.pixabay.com/photo/2017/11/26/15/16/smiley-2979107_640.jpg",
+            )
+            await channel.send(
+                embed=embed,
+            )
             await self.bot.log(f"Sent Admin leave message to {channel} {channel.guild}")
         except Exception as e:
-            await self.log(e)
+            await self.bot.log(e)
 
     @commands.Cog.listener(name="on_member_join")
     async def join(self, member):
         if not self.bot.is_admin(member):
             return
         channel = await self.get_channel(member.guild)
-        txt = "jijeefff"
+        txt = f"I'm so excited to tell that my developer {member.mention} just joined this Server. I'm feeling so lucky to have him here.(๑♡⌓♡๑)"
         try:
-            await channel.send(txt)
+            embed = Embed(
+                title="Shubhendra sir joined",
+                description=txt,
+            )
+            embed.set_image(
+                url="https://cdn.pixabay.com/photo/2015/10/16/19/18/balloon-991680_640.jpg",
+            )
+            await channel.send(
+                embed=embed,
+            )
             await self.bot.log(f"Sent Admin join message to {channel} {channel.guild}")
         except Exception as e:
-            await self.log(e)
+            await self.bot.log(e)
 
 
 def setup(bot):
