@@ -1,5 +1,6 @@
+from typing import Optional
 from discord.ext import commands
-from discord import File
+from discord import File, User
 from decouple import config
 import heroku3
 import asyncio
@@ -39,14 +40,19 @@ class Admin(commands.Cog):
         os.remove("logs.txt")
 
     @commands.command(hidden=True)
-    async def setp(self, ctx: commands.Context, arg1: str, arg2: str, arg3: str = "en"):
+    async def setp(
+        self,
+        ctx: commands.Context,
+        user: User,
+        username: str,
+        lang: Optional[str] = "en",
+    ):
         cog = self.bot.get_cog("Profile")
-        user = ctx.message.mentions[0]
-        await cog._setprofile(ctx.author, arg2, arg3)
+        await cog._setprofile(user, username, lang)
         await ctx.send(
             embed=self.bot.embed.get_default(
                 title="Profile linked successfully",
-                description=f"{ctx.author.mention}'s Quora account with the username {arg2} has been successfully linked with the bot",
+                description=f"{user.mention}'s Quora {lang} account with the username {username} has been successfully linked with the bot",
             ),
         )
 
