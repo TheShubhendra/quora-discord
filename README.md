@@ -1,6 +1,6 @@
 # quora-discord
 
-A Discord bot to fetch and show Quora profiles in a beautiful format and with ultrasonic speed. Using yhis bot you can keep watch on the follower and answer count and get notified when someone follows, unfollows you or any of your answer get collapsed or restored.
+A Discord bot to fetch and show Quora profiles in a beautiful format and with ultrasonic speed. Using this bot you can keep an eye on the follower and answer count and get notified when someone follows, unfollows you or any of your answer get collapsed or restored.
 
 # Commands
 
