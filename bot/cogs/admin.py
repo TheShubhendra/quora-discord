@@ -80,7 +80,8 @@ class Admin(commands.Cog):
 
     async def get_channel(self, guild):
         if guild.system_channel:
-            return guild.system_channel
+            if guild.system_channel.permissions_for(guild.me).send_messages:
+                return guild.system_channel
         messages = []
         for i in guild.text_channels:
             if i.last_message_id is None:
