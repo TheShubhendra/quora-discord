@@ -1,12 +1,5 @@
-discord.py==1.7.3
-python-decouple
-aioredis
-git+https://github.com/TheShubhendra/pyquora.git
-sqlalchemy==1.3.22
-texttable
-psycopg2
-git+https://github.com/TheShubhendra/profile-watcher.git
-heroku3
-python-binary-memcached==0.30.1
-discord_components==2.0.2
-topggpy
+discord~=2.2.2
+aiohttp
+redis~=4.5.4
+pyquora~=0.4.1
+SQLAlchemy~=2.0.10
