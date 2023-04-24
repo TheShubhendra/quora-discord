@@ -1,9 +1,3 @@
-# from sqlalchemy import create_engine
-# from sqlalchemy import text
-# engine = create_engine(
-#     "postgresql+psycopg2://postgres:saurabh@localhost/mydb")
-# with engine.connect() as conn:
-#     result = conn.execute(text("SELECT * from actor"))
 import glob
 import json
 import discord
