@@ -1,6 +1,9 @@
 import discord
 from discord.ext import commands
 from typing import Optional
+from ...db._usersdata import getQuoraUserData
+from ...utils.embeds._profileEmbed import profile_view
+from ...utils.ui.profileUi import ProfileDropdownView
 
 
 class UserProfile(commands.Cog):
@@ -8,11 +11,20 @@ class UserProfile(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
 
-    @discord.app_commands.command(name='profile', description='Fetches the profile')
-    @discord.app_commands.describe(member="mention the user")
-    async def profile(self, interaction: discord.Interaction, member: Optional[discord.Member]):
+    @discord.app_commands.command(name='profile',
+                                  description='Fetches the profile')
+    @discord.app_commands.describe(member="mention the user",
+                                   username="Give your Quora Username or Link")
+    async def profile(self,
+                      interaction: discord.Interaction,
+                      member: Optional[discord.Member],
+                      username: Optional[str]):
         member = member if member is not None else interaction.user
-        await interaction.response.send_message(f'ok I got {member.display_name}')
+        username = username if username is not None else 'Saurabh-Vishwakarma-228'
+        userdata = await getQuoraUserData(username)
+        embed = await profile_view(member, userdata)
+        view = ProfileDropdownView()
+        await interaction.response.send_message(embed=embed, view=view)
 
 
 async def setup(bot) -> None:
