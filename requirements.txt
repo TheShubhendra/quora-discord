@@ -3,3 +3,4 @@ aiohttp
 redis~=4.5.4
 pyquora~=0.4.1
 SQLAlchemy~=2.0.10
+git+https://github.com/TheShubhendra/pyquora.git
