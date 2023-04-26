@@ -7,6 +7,13 @@ from ...utils.ui.profileUi import ProfileDropdownView
 
 
 class UserProfile(commands.Cog):
+    """class to generate general commands for bot
+
+    Args:
+        None
+    Inherits:
+        Inherits discord.ext.commands.Cog
+    """
 
     def __init__(self, bot) -> None:
         self.bot = bot
@@ -21,9 +28,10 @@ class UserProfile(commands.Cog):
                       username: Optional[str]):
         member = member if member is not None else interaction.user
         username = username if username is not None else 'Saurabh-Vishwakarma-228'
-        userdata = await getQuoraUserData(username)
-        embed = await profile_view(member, userdata)
-        view = ProfileDropdownView()
+        userDataProfile, userDataAnswers, userDataTopic = await getQuoraUserData(username)
+        embed = profile_view(member, userDataProfile, self.bot)
+        view = ProfileDropdownView(
+            interaction, self.bot, userDataProfile, userDataAnswers, userDataTopic)
         await interaction.response.send_message(embed=embed, view=view)
 
 
