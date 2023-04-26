@@ -28,10 +28,10 @@ class UserProfile(commands.Cog):
                       username: Optional[str]):
         member = member if member is not None else interaction.user
         username = username if username is not None else 'Saurabh-Vishwakarma-228'
-        userDataProfile, userDataAnswers, userDataTopic = await getQuoraUserData(username)
+        userDataProfile, userDataAnswers, userDataKnows = await getQuoraUserData(username)
         embed = profile_view(member, userDataProfile, self.bot)
         view = ProfileDropdownView(
-            interaction, self.bot, userDataProfile, userDataAnswers, userDataTopic)
+            interaction, self.bot, userDataProfile, userDataAnswers, userDataKnows)
         await interaction.response.send_message(embed=embed, view=view)
 
 

@@ -54,8 +54,7 @@ def profile_pic_view(
     client: commands.Bot,
 ) -> discord.Embed:
     embed = discord.Embed(
-        title=userDataProfile.username,
-        url=f"https://www.quora.com/profile/{userDataProfile.username}",
+        title="Profile Picture",
         colour=discord.Colour.red(),
     )
     embed.set_author(name=(userDataProfile.firstName + ' ' + userDataProfile.lastName).strip(),
@@ -74,11 +73,11 @@ def profile_bio_view(
     userDataProfile: quora.Profile,
     client: commands.Bot,
 ) -> discord.Embed:
-    embed = discord.Embed(title=userDataProfile.username,
-                          colour=discord.Colour.red())
+    embed = discord.Embed(
+        colour=discord.Colour.red())
     embed.set_author(name=(userDataProfile.firstName + ' ' + userDataProfile.lastName).strip(),
                      icon_url=userDataProfile.profileImage)
-    embed.add_field(name="Bio",
+    embed.add_field(name="Profile Bio",
                     value=userDataProfile.profileBio)
     embed.timestamp = datetime.utcnow()
     embed.set_footer(
@@ -94,7 +93,7 @@ def profile_answers_view(
     userDataAnswers: quora.Answer,
     client: commands.Bot,
 ) -> discord.Embed:
-    embed = discord.Embed(title=userDataProfile.username,
+    embed = discord.Embed(title="Recent Answers",
                           colour=discord.Colour.red())
     embed.set_author(name=(userDataProfile.firstName + ' ' + userDataProfile.lastName).strip(),
                      icon_url=userDataProfile.profileImage)
@@ -110,13 +109,12 @@ def profile_answers_view(
 
 
 def profile_topic_view(
-    interaction_user: discord.Member, userDataProfile: quora.Profile, userDataTopic: quora.Topic, client: commands.Bot
+    interaction_user: discord.Member, userDataProfile: quora.Profile, userDataKnows: quora.Topic, client: commands.Bot
 ) -> discord.Embed:
-    embed = discord.Embed(title=userDataProfile.username,
-                          url=userDataProfile.profileImage, colour=discord.Colour.red())
+    embed = discord.Embed(title="Knows About", colour=discord.Colour.red())
     embed.set_author(name=(userDataProfile.firstName + ' ' + userDataProfile.lastName).strip(),
                      icon_url=userDataProfile.profileImage)
-    for topic in userDataTopic:
+    for topic in userDataKnows:
         embed.add_field(
             name=topic.name,
             value=f"{str(topic.userAnswersCount)} answers by {userDataProfile.firstName} on **[{topic.name}]({topic.url})** (Followed by {topic.followerCount})",

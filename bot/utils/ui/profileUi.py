@@ -20,13 +20,13 @@ class _ProfileDropdown(discord.ui.Select):
         messageInteraction: discord.Interaction,
         userDataProfile,
         userDataAnswers,
-        userDataTopic
+        userDataKnows
     ):
         super().__init__()
         self.bot = bot
         self.userDataProfile = userDataProfile
         self.userDataAnswers = userDataAnswers
-        self.userDataTopic = userDataTopic
+        self.userDataKnows = userDataKnows
         self.messageInteraction = messageInteraction
         options = [
             discord.SelectOption(
@@ -44,44 +44,43 @@ class _ProfileDropdown(discord.ui.Select):
             discord.SelectOption(label="Knows about",
                                  description="Shows about user"),
         ]
-        super().__init__(
-            placeholder=self.uiDropdownPlaceholderText, min_values=1, max_values=1, options=options
-        )
+        super().__init__(min_values=1, max_values=1, options=options
+                         )
 
     async def callback(self, interaction: discord.Interaction):
         if self.messageInteraction.user.id == interaction.user.id:
             match (self.values[0]):
                 case "General Profile":
-                    await interaction.message.edit(
+                    await interaction.response.edit_message(
                         embed=profile_view(
                             self.messageInteraction.user, self.userDataProfile, self.bot
-                        )
+                        ),
                     )
                 case "Profile Picture":
-                    await interaction.message.edit(
+                    await interaction.response.edit_message(
                         embed=profile_pic_view(
                             self.messageInteraction.user, self.userDataProfile, self.bot
                         )
                     )
                 case "Profile Bio":
-                    await interaction.message.edit(
+                    await interaction.response.edit_message(
                         embed=profile_bio_view(
                             self.messageInteraction.user, self.userDataProfile, self.bot
                         )
                     )
+
                 case "Latest Answers":
-                    await interaction.message.edit(
+                    await interaction.response.edit_message(
                         embed=profile_answers_view(
                             self.messageInteraction.user, self.userDataProfile, self.userDataAnswers, self.bot
                         )
                     )
                 case "Knows about":
-                    await interaction.message.edit(
+                    await interaction.response.edit_message(
                         embed=profile_topic_view(
-                            self.messageInteraction.user, self.userDataProfile, self.userDataTopic, self.bot
+                            self.messageInteraction.user, self.userDataProfile, self.userDataKnows, self.bot
                         )
                     )
-            self.uiDropdownPlaceholderText = self.values[0]
 
         else:
             await interaction.response.send_message(
@@ -96,13 +95,13 @@ class ProfileDropdownView(discord.ui.View):
         bot: commands.Bot,
         userDataProfile: quora.Profile,
         userDataAnswers: quora.Answer,
-        userDataTopic: Callable,
+        userDataKnows: Callable,
     ):
         super().__init__()
 
         # Adds the dropdown to our view object.
         self.add_item(
             _ProfileDropdown(
-                bot, messageInteraction, userDataProfile, userDataAnswers, userDataTopic
+                bot, messageInteraction, userDataProfile, userDataAnswers, userDataKnows
             )
         )
