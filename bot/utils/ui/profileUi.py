@@ -7,13 +7,11 @@ from ...utils.embeds._profileEmbed import (
     profile_answers_view,
     profile_topic_view,
 )
-from typing import Callable
+from typing import Callable, Any, Coroutine
 from discord.ext import commands
 
 
 class _ProfileDropdown(discord.ui.Select):
-    uiDropdownPlaceholderText = "More"
-
     def __init__(
         self,
         bot: commands.Bot,
@@ -44,8 +42,8 @@ class _ProfileDropdown(discord.ui.Select):
             discord.SelectOption(label="Knows about",
                                  description="Shows about user"),
         ]
-        super().__init__(min_values=1, max_values=1, options=options
-                         )
+        super().__init__(placeholder="Make a Selection",
+                         min_values=1, max_values=1, options=options)
 
     async def callback(self, interaction: discord.Interaction):
         if self.messageInteraction.user.id == interaction.user.id:
@@ -81,7 +79,7 @@ class _ProfileDropdown(discord.ui.Select):
                             self.messageInteraction.user, self.userDataProfile, self.userDataKnows, self.bot
                         )
                     )
-
+            self.placeholder = self.values[0]
         else:
             await interaction.response.send_message(
                 "You can't interact with this message", ephemeral=True
@@ -97,7 +95,9 @@ class ProfileDropdownView(discord.ui.View):
         userDataAnswers: quora.Answer,
         userDataKnows: Callable,
     ):
+        self.messageInteraction = messageInteraction
         super().__init__()
+        self.timeout = 30
 
         # Adds the dropdown to our view object.
         self.add_item(
@@ -105,3 +105,8 @@ class ProfileDropdownView(discord.ui.View):
                 bot, messageInteraction, userDataProfile, userDataAnswers, userDataKnows
             )
         )
+
+    async def on_timeout(self) -> Coroutine[Any, Any, None]:
+        await self.messageInteraction.edit_original_response(view=None)
+        # await self.messageInteraction.response.edit_message(view=None)
+        return await super().on_timeout()

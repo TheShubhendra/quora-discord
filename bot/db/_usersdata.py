@@ -15,8 +15,12 @@ async def getQuoraUserData(username: str) -> Tuple[Callable,
     Returns:
         Tuple[Callable,List[Callable,Callable, Callable],Coroutine[Any, Any, list[Topic]]]
     """
-    user = User(username=username)
-    profile = await user.profile()
-    answers = await user.answers()
-    topic = await user.knows_about()
-    return profile, answers, topic
+    try:
+        user = User(username=username)
+        profile = await user.profile()
+        answers = await user.answers()
+        topic = await user.knows_about()
+        return profile, answers, topic
+    except Exception as e:
+        print(e)
+        return None
