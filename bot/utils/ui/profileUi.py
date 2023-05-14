@@ -18,7 +18,7 @@ class _ProfileDropdown(discord.ui.Select):
         messageInteraction: discord.Interaction,
         userDataProfile,
         userDataAnswers,
-        userDataKnows
+        userDataKnows,
     ):
         super().__init__()
         self.bot = bot
@@ -39,11 +39,11 @@ class _ProfileDropdown(discord.ui.Select):
             discord.SelectOption(
                 label="Latest Answers", description="Shows the latest Answers by users"
             ),
-            discord.SelectOption(label="Knows about",
-                                 description="Shows about user"),
+            discord.SelectOption(label="Knows about", description="Shows about user"),
         ]
-        super().__init__(placeholder="Make a Selection",
-                         min_values=1, max_values=1, options=options)
+        super().__init__(
+            placeholder="Make a Selection", min_values=1, max_values=1, options=options
+        )
 
     async def callback(self, interaction: discord.Interaction):
         if self.messageInteraction.user.id == interaction.user.id:
@@ -70,13 +70,19 @@ class _ProfileDropdown(discord.ui.Select):
                 case "Latest Answers":
                     await interaction.response.edit_message(
                         embed=profile_answers_view(
-                            self.messageInteraction.user, self.userDataProfile, self.userDataAnswers, self.bot
+                            self.messageInteraction.user,
+                            self.userDataProfile,
+                            self.userDataAnswers,
+                            self.bot,
                         )
                     )
                 case "Knows about":
                     await interaction.response.edit_message(
                         embed=profile_topic_view(
-                            self.messageInteraction.user, self.userDataProfile, self.userDataKnows, self.bot
+                            self.messageInteraction.user,
+                            self.userDataProfile,
+                            self.userDataKnows,
+                            self.bot,
                         )
                     )
             self.placeholder = self.values[0]
@@ -105,6 +111,7 @@ class ProfileDropdownView(discord.ui.View):
                 bot, messageInteraction, userDataProfile, userDataAnswers, userDataKnows
             )
         )
+        # self.add_item(discord.ui.Button(label="delete", url="https://www.google.com"))
 
     async def on_timeout(self) -> Coroutine[Any, Any, None]:
         await self.messageInteraction.edit_original_response(view=None)

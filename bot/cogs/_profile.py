@@ -1,10 +1,11 @@
 import discord
 from discord.ext import commands
 from typing import Optional
-from ..db._usersdata import getQuoraUserData
 from ..utils.embeds._profileEmbed import profile_view
+from ..utils.embeds._generalEmbed import profileNotFound
 from ..utils.ui.profileUi import ProfileDropdownView
 from ..utils.parser.usernameParser import getQuoraUsername
+from quora import User
 
 
 class UserProfile(commands.Cog):
@@ -20,30 +21,37 @@ class UserProfile(commands.Cog):
         self.bot = bot
         super().__init__()
 
-    @discord.app_commands.command(name='profile',
-                                  description='Fetches the profile')
-    @discord.app_commands.describe(member="mention the user",
-                                   username="Give your Quora Username or Link")
-    async def profile(self,
-                      interaction: discord.Interaction,
-                      member: Optional[discord.Member],
-                      username: Optional[str]):
-
+    @discord.app_commands.command(name="profile", description="Fetches the profile")
+    @discord.app_commands.describe(
+        member="mention the user", username="Give your Quora Username or Link"
+    )
+    async def profile(
+        self,
+        interaction: discord.Interaction,
+        member: Optional[discord.Member],
+        username: Optional[str],
+    ):
         member = member if member is not None else interaction.user
-        _username = None
         if username is None:
-            _username = self.bot.db.getQuoraUsername(member.id)
+            username = self.bot.db.getQuoraUsername(member.id)
         try:
-            if username is None and _username is None:
-                await interaction.response.send_message("profile not found!!")
-            else:
-                username = username if username else _username
-                userDataProfile, userDataAnswers, userDataKnows = await getQuoraUserData(username)
-                view = ProfileDropdownView(
-                    interaction, self.bot, userDataProfile, userDataAnswers, userDataKnows)
-                embed = profile_view(member, userDataProfile, self.bot)
-                await interaction.response.send_message(embed=embed, view=view)
+            quoraUser = User(username=username, cache_manager=self.bot.cacheManager)
+            userDataProfile = await quoraUser.profile()
+            userDataAnswers = await quoraUser.answers()
+            userDataKnows = await quoraUser.knows_about()
+            view = ProfileDropdownView(
+                interaction,
+                self.bot,
+                userDataProfile,
+                userDataAnswers,
+                userDataKnows,
+            )
+            embed = profile_view(member, userDataProfile, self.bot)
+            await interaction.response.send_message(embed=embed, view=view)
         except Exception as e:
+            await interaction.response.send_message(
+                embed=profileNotFound(self.bot, interaction.user), ephemeral=True
+            )
             print(e)
 
 

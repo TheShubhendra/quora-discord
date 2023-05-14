@@ -1,4 +1,3 @@
-
 from sqlalchemy import create_engine
 
 from sqlalchemy.orm import (
@@ -11,12 +10,11 @@ from ..db.schemas import (
     Base,
     User,
 )
+import sqlalchemy
 
 
 class DatabaseManager:
-    def __init__(self,
-                 databaseurl: str,
-                 echo=False) -> None:
+    def __init__(self, databaseurl: str, echo=False) -> None:
         self.dburl = databaseurl
         self.engine = create_engine(databaseurl, echo=echo)
         session_factory = sessionmaker(bind=self.engine)
@@ -24,18 +22,19 @@ class DatabaseManager:
         self.base = Base
 
     def getQuoraUsername(self, id: int) -> str | None:
-        username = self.session.query(User).filter(
-            User.discord_id == id).first()
+        username = self.session.query(User).filter(User.discord_id == id).first()
         if username:
             username = username.quora_username
         return username
 
-    def addQuoraUsername(self,
-                         discord_id: int,
-                         quora_username: str,
-                         discord_username: str,
-                         follower_count: int,
-                         access: str = "public") -> User:
+    def addQuoraUsername(
+        self,
+        discord_id: int,
+        quora_username: str,
+        discord_username: str,
+        follower_count: int,
+        access: str = "public",
+    ) -> User:
         user = User(
             discord_id=discord_id,
             discord_username=discord_username,
@@ -48,9 +47,7 @@ class DatabaseManager:
         return user
 
     def checkUserExistence(self, discord_id: int) -> bool:
-        user = self.session.query(User).filter(
-            User.discord_id == discord_id).first()
-        print(user)
+        user = self.session.query(User).filter(User.discord_id == discord_id).first()
         return user
 
     def removeUserExistence(self, discord_id: int):
@@ -69,3 +66,6 @@ class DatabaseManager:
         user.access = access
         user.followerCount = followerCount
         self.session.commit()
+
+    def getAllQuorans(self):
+        return self.session.query(User).all()
