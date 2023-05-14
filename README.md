@@ -6,58 +6,50 @@ A Discord bot to fetch and show Quora profiles in a beautiful format and with ul
 
 ## Profile
 
-* `q!setprofile` 
-    * Links your Quora profile with the bot so that you don't need to type your username again and again.
+- `/register`
 
-* `q!remove`
-    * Unlink your Quora profile with the bot.
+  - Links your Quora profile with the bot so that you don't need to type your username again and again.
 
-* `q!profile`
-    * Shows your profile or another's profile if Quora username is passed.
+- `/remove`
 
-* `q!pic` 
-    * Fetches profile picture of the Quoran.
+  - Unlink your Quora profile with the bot.
 
-* `q!bio`
-    * Fetches the bio section of the Quoran.
-
-* `q!answers`
-    * Fetches latest 3 or latest 2 and pinned answer.
-
-* `q!knows`
-    * Fetches the knows about section.
-
+- `/profile`
+  - Shows your profile or another's profile if Quora username is passed.
 
 ## Watcher
 
-* `q!set_channel`
-    * Set the channel in which bot will send the watcher's notifications.
+- `q!set_channel`
 
-* `q!watch`
-    * Add your profile for watching.
+  - Set the channel in which bot will send the watcher's notifications.
 
+- `q!watch`
+  - Add your profile for watching.
 
 ## General
 
-* `q!ping`
-    * Check the bot latency.
+- `q!ping` \* Check the bot latency.
+<!--
+- `q!invite`
 
-* `q!invite`
-    * Invite bot to your server.
- 
-* `q!server`
-    * Join the support server of the bot.
+  - Invite bot to your server.
 
-* `q!developer`
-    * Show about developer of the bot.
+- `q!server`
 
-* `q!status`
-    * Shows the bot status.
+  - Join the support server of the bot.
 
-* `q!libraries`
-    * Display information about the libraries installed in the server.
+- `q!developer`
+
+  - Show about developer of the bot.
+
+- `q!status`
+
+  - Shows the bot status.
+
+- `q!libraries`
+  - Display information about the libraries installed in the server. -->
 
 ## Other
 
-* `q!help`
-    * Show help message for the bot.
+- `q!help`
+  - Show help message for the bot.
