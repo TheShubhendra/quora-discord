@@ -1,1 +1,4 @@
+discord.py
 git+https://github.com/TheShubhendra/pyquora.git
+python-binary-memcached
+sqlalchemy

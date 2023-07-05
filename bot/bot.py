@@ -4,7 +4,6 @@ from .db.database import DatabaseManager
 from sqlalchemy import create_engine
 import glob
 import os
-import bmemcached
 
 
 class QuoraBot(commands.Bot, DatabaseManager):
@@ -14,8 +13,7 @@ class QuoraBot(commands.Bot, DatabaseManager):
         logging,
         LOGGING_GUILD=None,
         database_url: str = None,
-        logging_channel_id: str = None,
-        cacheManager=None,
+        logging_channel_id: discord.Object = None,
     ) -> None:
         super().__init__(
             intents=intents, command_prefix="$", activity=discord.Game(name="Quora API")
@@ -25,7 +23,7 @@ class QuoraBot(commands.Bot, DatabaseManager):
         self.LOGGING_CHANNEL = logging_channel_id
         self.logging = logging
         self.db: DatabaseManager = DatabaseManager(databaseurl=database_url, echo=False)
-        self.cacheManager = bmemcached.Client()
+        self.cache_manager = None
 
     async def setup_hook(self):
         await self.load_custom_files_extensions(path="bot/cogs")

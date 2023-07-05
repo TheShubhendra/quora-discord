@@ -139,3 +139,5 @@ cython_debug/
 
 logs.txt
 test.py
+.idea
+.vscode
