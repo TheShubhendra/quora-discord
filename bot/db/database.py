@@ -14,9 +14,9 @@ import sqlalchemy
 
 
 class DatabaseManager:
-    def __init__(self, databaseurl: str, echo=False) -> None:
-        self.dburl = databaseurl
-        self.engine = create_engine(databaseurl, echo=echo)
+    def __init__(self, database_url: str, echo=False) -> None:
+        self.db_url = database_url
+        self.engine = create_engine(database_url, echo=echo)
         session_factory = sessionmaker(bind=self.engine)
         self.session = scoped_session(session_factory)
         self.base = Base

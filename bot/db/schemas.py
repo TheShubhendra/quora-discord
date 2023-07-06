@@ -33,11 +33,6 @@ class Profile(Base):
     answer_count = Column(Integer, default=0)
 
 
-# CREATE TABLE employees(
-#     employee_id SERIAL NOT NULL PRIMARY KEY,
-#     employee_name VARCHAR(60) NOT NULL,
-#     employee_dept INTEGER REFERENCES departments(department_id)
-# # )
 
 class User(Base):
     __tablename__ = "users"
