@@ -25,7 +25,7 @@ class Watcher(commands.Cog):
     @commands.command()
     async def watch(self, ctx):
         """Add Quora profiles to watching list."""
-        raise CommandError("This command is temporarily disabled")
+        # raise CommandError("This command is temporarily disabled")
         async with ctx.channel.typing():
             if not self.bot.db.does_user_exist(ctx.author.id):
                 await ctx.reply("Please setup your profile first using `q!setup`.")

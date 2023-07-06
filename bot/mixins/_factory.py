@@ -14,7 +14,7 @@ class QuoraUser(User):
 
 class ObjectFactory:
     def get_quora(self, username, *args, **kwargs):
-        if self._session is None:
+        if self._session is None or self._session.closed:
             self._session = ClientSession()
         self.logger.info(f"Generating User object for {username} ")
         return QuoraUser(

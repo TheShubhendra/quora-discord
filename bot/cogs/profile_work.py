@@ -51,6 +51,8 @@ class Profile(ProfileHelper, commands.Cog):
     )
     async def fetch_profile(self, ctx, quora_username=None, language="en"):
         """Gives details of any Quora profile."""
+        if self._session is None or self._session.closed:
+            await self._create_session()
         user_or_username = await self.get_username(ctx, quora_username)
         await self._generate_view(ctx, user_or_username, "profile", language)
 
@@ -93,7 +95,7 @@ class Profile(ProfileHelper, commands.Cog):
         usage="q!knows \nq!knows Shubhendra-Kushwaha-1\nq!knows <@72863363373337>",
         brief="Fetch knows about section.",
     )
-    async def knows(self, ctx, args=None):
+    async def knows(self, ctx, args=None, language="en"):
         user_or_username = await self.get_username(ctx, args)
         await self._generate_view(ctx, user_or_username, "pic", language)
 

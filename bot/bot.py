@@ -55,22 +55,22 @@ class QuoraBot(commands.Bot, WatcherMixin, ObjectFactory):
         self._session = session
         self.send_stats = send_stats
 
-    async def on_command_error(
-        self,
-        ctx: commands.Context,
-        exception: Exception,
-    ) -> None:
-        self.logger.exception(exception)
-        await self.log(
-            f"""
-{exception}
-channel: {ctx.channel.id} {ctx.channel.name}
-guild: {ctx.guild.id} {ctx.guild.name}
-author: {ctx.author.id} {ctx.author.name+ctx.author.discriminator}
-command: {ctx.message.id} {ctx.message.content}
-"""
-        )
-        await ctx.send(exception)
+#     async def on_command_error(
+#         self,
+#         ctx: commands.Context,
+#         exception: Exception,
+#     ) -> None:
+#         self.logger.exception(exception)
+#         await self.log(
+#             f"""
+# {exception}
+# channel: {ctx.channel.id} {ctx.channel.name}
+# guild: {ctx.guild.id} {ctx.guild.name}
+# author: {ctx.author.id} {ctx.author.name+ctx.author.discriminator}
+# command: {ctx.message.id} {ctx.message.content}
+# """
+#         )
+#         await ctx.send(exception)
 
     @property
     def up_time(self) -> float:

@@ -1,5 +1,8 @@
 from asyncio import TimeoutError
-from discord.ui import Select
+
+import discord.ui
+from discord.ui import Select, Button
+from discord import SelectOption, ButtonStyle
 from quora.user import subdomains
 from quora.exceptions import ProfileNotFoundError
 from discord.ext.commands import CommandError
@@ -30,12 +33,14 @@ class ProfileHelper:
         #         value="knows",
         #     ),
         # ]
-        self.components = [
-            Select(
-                placeholder="Select sections",
-                options=self.select_options,
-            )
-        ]
+        # self.components = [
+        #     Select(
+        #         placeholder="Select sections",
+        #         options=self.select_options,
+        #     )
+        # ]
+        # self.embed = kwargs.get("embed")
+        pass
 
     async def _get_embed(self, user, view, language="en"):
         try:
@@ -63,62 +68,61 @@ on Quora {subdomains[language]}"
         return embed
 
     async def _generate_view(
-        self,
-        ctx,
-        user_or_username,
-        view="general",
-        language="en",
+            self,
+            ctx,
+            user_or_username,
+            view="general",
+            language="en",
     ):
         if isinstance(user_or_username, str):
             user = self.bot.get_quora(user_or_username)
         elif user_or_username is None:
             return
         else:
-            user = self.bot.get_quora(user_or_username.quora_username)
-            language = user_or_username.profiles[0]. language
-        message = await ctx.send(
-            embed=await self._get_embed(user, view, language),
-            components=self.components,
+            user = self.bot.get_quora(user_or_username.username)
+            language = "en"
+        profile_view = discord.ui.View()
+        select_options = [
+            SelectOption(
+                label="General Profile",
+                value="profile",
+            ),
+            SelectOption(
+                label="Profile Picture",
+                value="pic",
+            ),
+            SelectOption(
+                label="Profile Bio",
+                value="bio",
+            ),
+            SelectOption(
+                label="Latest Answers",
+                value="answers",
+            ),
+            SelectOption(
+                label="Knows about",
+                value="knows",
+            ),
+        ]
+        select = Select(
+            placeholder="Select sections",
+            options=select_options,
         )
-        while True:
-            try:
-                interaction = await self.bot.wait_for(
-                    "select_option",
-                    check=lambda i: i.message == message,
-                    timeout=30,
-                )
-            except TimeoutError:
-                await message.edit(
-                    components=[
-                        Select(
-                            placeholder="Select sections",
-                            options=self.select_options,
-                            disabled=True,
-                        )
-                    ]
-                )
-                return
-            except Exception as e:
-                self.logger.exception(str(e))
-                continue
-            if (
-                interaction.user != ctx.author
-                and interaction.user.id != self.bot.owner_id
-            ):
-                await interaction.respond(
-                    content="You are not allowed\
-to interact with this message.",
-                )
-                continue
-            selection = interaction.values[0]
-            embed = await self._get_embed(user, selection, language)
-            try:
-                await interaction.message.edit(
-                    embed=embed,
-                    components=self.components,
-                )
-            except Exception:
-                self.logger.exception("Error")
+
+        async def callback(inter):
+            await inter.response.edit_message(
+                embed=await self._get_embed(user, inter.data['values'][0], language),
+                view=profile_view,
+            )
+
+        select.callback = callback
+        profile_view.add_item(select)
+
+        await ctx.send(
+            embed=await self._get_embed(user, view, language),
+            view=profile_view,
+        )
+
 
     async def get_username(self, ctx, quora_username=None):
         if len(ctx.message.mentions) > 0:
@@ -131,10 +135,13 @@ related to {ctx.message.mentions[0]}"
             return self.bot.db.get_user(discord_id)
         elif quora_username is None:
             if not self.bot.db.does_user_exist(ctx.author.id):
-
                 async def callback(inter):
                     await self._setprofile_view(ctx)
 
+                view = discord.ui.View()
+                button = Button(label="Set Profile", custom_id="setprofile", style=ButtonStyle.green)
+                button.callback = callback
+                view.add_item(button)
                 await ctx.send(
                     embed=self.embed.get_default(
                         title="Profile not found",
@@ -142,15 +149,7 @@ related to {ctx.message.mentions[0]}"
 linked with your account found.\
 Please link your profile first or pass any username with the command.",
                     ),
-                    components=[
-                        self.bot.components_manager.add_callback(
-                            Button(
-                                style=ButtonStyle.green,
-                                label="Link Quora profile",
-                            ),
-                            callback,
-                        )
-                    ],
+                    view=view,
                 )
                 return
             return self.bot.db.get_user(ctx.author.id)
@@ -175,7 +174,7 @@ Please link your profile first or pass any username with the command.",
                     msg = await self.bot.wait_for(
                         "message",
                         check=lambda x: x.author == ctx.author
-                        and x.channel == message.channel,
+                                        and x.channel == message.channel,
                         timeout=20,
                     )
                 except TimeoutError:
@@ -197,17 +196,22 @@ Please link your profile first or pass any username with the command.",
             title="Set Profile",
             description="Please select the language",
         )
-        message = await ctx.send(
+        # view = discord.ui.View()
+        # options = [
+        #     SelectOption(label=name, value=value)
+        #     for value, name in subdomains.items()
+        # ]
+        message = await message.edit(
             embed=embed,
-            components=[
-                Select(
-                    placeholder="Select language",
-                    options=[
-                        SelectOption(label=name, value=value)
-                        for value, name in subdomains.items()
-                    ],
-                )
-            ],
+            # components=[
+            #     Select(
+            #         placeholder="Select language",
+            #         options=[
+            #             SelectOption(label=name, value=value)
+            #             for value, name in subdomains.items()
+            #         ],
+            #     )
+            # ],
         )
         try:
             interaction = await self.bot.wait_for(
@@ -218,13 +222,13 @@ Please link your profile first or pass any username with the command.",
         except TimeoutError:
             await message.edit(
                 embed=embed,
-                components=[
-                    Select(
-                        placeholder="Selection time out",
-                        disabled=True,
-                        options=[SelectOption(label="raw", value="raw")],
-                    )
-                ],
+                # components=[
+                #     Select(
+                #         placeholder="Selection time out",
+                #         disabled=True,
+                #         options=[SelectOption(label="raw", value="raw")],
+                #     )
+                # ],
             )
             return
         language = interaction.values[0]
@@ -272,20 +276,20 @@ Please link your profile first or pass any username with the command.",
         self.bot.db.add_profile(user, language=language)
 
     async def _manageprofile(
-        self,
-        ctx,
-        action=None,
+            self,
+            ctx,
+            action=None,
     ):
         user = self.bot.db.get_user(discord_id=ctx.author.id)
         if user is None:
             return
         linked_languages = ""
-        for i,profile in enumerate(user.profiles):
-            linked_languages+=f"{i+1}. {subdomains[profile.language]}\n" 
+        for i, profile in enumerate(user.profiles):
+            linked_languages += f"{i + 1}. {subdomains[profile.language]}\n"
         embed = self.embed.get_default(
             title="Profile Manager",
             description=f"Your Quora account with username {user.quora_username} is linked in following languages.\n"
-            + linked_languages,
+                        + linked_languages,
         )
 
         async def callback(inter):
@@ -349,7 +353,7 @@ Please link your profile first or pass any username with the command.",
                 interaction = await self.bot.wait_for(
                     "select_option",
                     check=lambda x: x.message == message
-                    and x.user.id == int(user.discord_id),
+                                    and x.user.id == int(user.discord_id),
                     timeout=30,
                 )
             except TimeoutError:
@@ -370,8 +374,8 @@ Please link your profile first or pass any username with the command.",
             language = interaction.values[0]
             if language in list(map(lambda x: x.language, user.profiles)):
                 await interaction.respond(
-                   content= "This language profile is already linked with Your account"
-                    )
+                    content="This language profile is already linked with Your account"
+                )
                 continue
             try:
                 await self.bot.get_quora(user.quora_username).profile(language=language)
