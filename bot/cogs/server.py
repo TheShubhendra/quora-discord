@@ -54,6 +54,6 @@ class Server(commands.Cog):
         return q_list
 
 
-def setup(bot):
+async def setup(bot):
     cog = Server(bot)
-    bot.add_cog(cog)
+    await bot.add_cog(cog)

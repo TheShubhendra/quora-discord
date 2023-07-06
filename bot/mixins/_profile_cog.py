@@ -1,10 +1,5 @@
 from asyncio import TimeoutError
-from discord_components import (
-    Button,
-    Select,
-    SelectOption,
-    ButtonStyle,
-)
+from discord.ui import Select
 from quora.user import subdomains
 from quora.exceptions import ProfileNotFoundError
 from discord.ext.commands import CommandError
@@ -13,28 +8,28 @@ from bot.utils import extract_quora_username
 
 class ProfileHelper:
     def __init__(self, *args, **kwargs):
-        self.select_options = [
-            SelectOption(
-                label="General Profile",
-                value="profile",
-            ),
-            SelectOption(
-                label="Profile Picture",
-                value="pic",
-            ),
-            SelectOption(
-                label="Profile Bio",
-                value="bio",
-            ),
-            SelectOption(
-                label="Latest Answers",
-                value="answers",
-            ),
-            SelectOption(
-                label="Knows about",
-                value="knows",
-            ),
-        ]
+        # self.select_options = [
+        #     SelectOption(
+        #         label="General Profile",
+        #         value="profile",
+        #     ),
+        #     SelectOption(
+        #         label="Profile Picture",
+        #         value="pic",
+        #     ),
+        #     SelectOption(
+        #         label="Profile Bio",
+        #         value="bio",
+        #     ),
+        #     SelectOption(
+        #         label="Latest Answers",
+        #         value="answers",
+        #     ),
+        #     SelectOption(
+        #         label="Knows about",
+        #         value="knows",
+        #     ),
+        # ]
         self.components = [
             Select(
                 placeholder="Select sections",

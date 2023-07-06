@@ -1,4 +1,5 @@
 import asyncio
+import glob
 import importlib
 import logging
 import os
@@ -14,7 +15,6 @@ from aiohttp import ClientSession
 import bmemcached
 import discord
 from discord.ext import commands
-from discord_components import DiscordComponents
 from quora import User
 from watcher import Watcher
 
@@ -89,28 +89,28 @@ command: {ctx.message.id} {ctx.message.content}
         sys.modules[module_name] = module
         spec.loader.exec_module(module)
 
-    async def on_ready(self):
-        DiscordComponents(self)
-        @self.after_invoke
-        async def record_command(ctx):  # pylint: disable=W0612
-            x = await self.redis.hincrby(
-                f"command:user:{ctx.author.id}",
-                ctx.command.name,
-                )
-            await self.redis.hincrby(
-                f"command:guild:{ctx.guild.id}",
-                ctx.command.name,
-                )
-                
-        await self.inform("Boot up completed.")
-        if self.run_watcher:
-            await self.load_watcher_data()
-            loop = asyncio.get_running_loop()
-            loop.create_task(self.watcher.run())
-            await self.log(
-                f"Boot up completed in {self.up_time} s."
-                f"Running{len(self.watcher.updaters)} updaters."
-            )
+    # async def on_ready(self):
+    #     return
+    #     @self.after_invoke
+    #     async def record_command(ctx):  # pylint: disable=W0612
+    #         x = await self.redis.hincrby(
+    #             f"command:user:{ctx.author.id}",
+    #             ctx.command.name,
+    #             )
+    #         await self.redis.hincrby(
+    #             f"command:guild:{ctx.guild.id}",
+    #             ctx.command.name,
+    #             )
+    #
+    #     await self.inform("Boot up completed.")
+    #     if self.run_watcher:
+    #         await self.load_watcher_data()
+    #         loop = asyncio.get_running_loop()
+    #         loop.create_task(self.watcher.run())
+    #         await self.log(
+    #             f"Boot up completed in {self.up_time} s."
+    #             f"Running{len(self.watcher.updaters)} updaters."
+    #         )
 
     async def inform(self, information: str):
         admin = await self.fetch_user(self.owner_id)
@@ -130,3 +130,20 @@ command: {ctx.message.id} {ctx.message.content}
         if isinstance(member, discord.Member):
             member = member.id
         return member == self.owner_id
+
+    async def setup_hook(self) -> None:
+        await self.load_custom_files_extensions("bot/cogs")
+
+    async def load_custom_files_extensions(self, path):
+        """
+        Takes path as an argument and load the extension using client.load_extension
+                :param path:
+        """
+        for files_and_folders in glob.glob(pathname=f"{path}/*_work.py"):
+            if os.path.isdir(files_and_folders):
+                await self.load_custom_files_extensions(path=files_and_folders)
+            elif os.path.isfile(files_and_folders) and files_and_folders.endswith(
+                    ".py"
+            ):
+                await self.load_extension(files_and_folders.replace("/", ".")[:-3])
+                self.logger.info(f"Loaded {files_and_folders.replace('/', '.')[:-3]}")

@@ -60,6 +60,6 @@ class Watcher(commands.Cog):
             )
 
 
-def setup(bot):
+async def setup(bot):
     x = Watcher(bot)
-    bot.add_cog(x)
+    await bot.add_cog(x)

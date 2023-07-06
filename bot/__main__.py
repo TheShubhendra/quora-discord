@@ -13,17 +13,17 @@ from .bot import QuoraBot
 
 
 DATABASE_URL = config("DATABASE_URL")
-REDIS_URL = config("REDIS_URL")
+REDIS_URL = config("REDIS_URL", None)
 TOKEN = config("TOKEN")
-OWNER_ID = int(config("OWNER_ID", None))
+# OWNER_ID = int(config("OWNER_ID", None))
 LOGGING = int(config("LOGGING_LEVEL", 20))
-LOG_CHANNEL = int(config("LOG_CHANNEL", None))
-RUN_WATCHER = bool(int(config("RUN_WATCHER", 1)))
-MC_SERVERS = config("MEMCACHEDCLOUD_SERVERS")
-MC_USERNAME = config("MEMCACHEDCLOUD_USERNAME")
-MC_PASSWORD = config("MEMCACHEDCLOUD_PASSWORD")
+LOG_CHANNEL = config("LOG_CHANNEL", None)
+RUN_WATCHER = bool(int(config("RUN_WATCHER", 0)))
+# MC_SERVERS = config("MEMCACHEDCLOUD_SERVERS")
+# MC_USERNAME = config("MEMCACHEDCLOUD_USERNAME")
+# MC_PASSWORD = config("MEMCACHEDCLOUD_PASSWORD")
 MODERATORS_ID = config("MODERATORS_ID", "0")
-SEND_STATS = bool(int(config("SEND_STATS", 1)))
+SEND_STATS = bool(int(config("SEND_STATS", 0)))
 
 
 logging.basicConfig(
@@ -62,21 +62,17 @@ class QuoraHelpCommand(commands.HelpCommand):
         await destination.send(embed=self.context.bot.embed.command_help(command))
 
 
-intents = Intents(
-    guild_messages=True,
-    guilds=True,
-    members=True,
-)
-cache_client = bmemcached.Client(
-    MC_SERVERS.split(","),
-    MC_USERNAME,
-    MC_PASSWORD,
-)
+intents = Intents.all()
+# cache_client = bmemcached.Client(
+#     MC_SERVERS.split(","),
+#     MC_USERNAME,
+#     MC_PASSWORD,
+# )
 
 
 bot = QuoraBot(
     command_prefix="q!",
-    owner_id=OWNER_ID,
+    # owner_id=OWNER_ID,
     case_insensitive=True,
     strip_after_prefix=True,
     description="This bot lets you to interact with Quora.",
@@ -84,8 +80,8 @@ bot = QuoraBot(
     intents=intents,
     help_command=QuoraHelpCommand(),
     watcher=Watcher(),
-    log_channel_id=LOG_CHANNEL,
-    cache_client=cache_client,
+    # log_channel_id=LOG_CHANNEL,
+    # cache_client=cache_client,
     database_url=DATABASE_URL,
     redis_url=REDIS_URL,
     run_watcher=RUN_WATCHER,
@@ -99,8 +95,6 @@ bot = QuoraBot(
 )
 
 
-for cog in glob.glob("bot/cogs/*.py"):
-    bot.load_extension(cog[:-3].replace("/", "."))
 
 if RUN_WATCHER:
     bot.load_module("/bot/modules/whandler.py", "whandler")

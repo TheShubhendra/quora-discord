@@ -144,6 +144,6 @@ didn't feel good here and left the server \n(╥﹏╥)."
             await self.bot.log(e)
 
 
-def setup(bot):
+async def setup(bot):
     cog = Admin(bot)
-    bot.add_cog(cog)
+    await bot.add_cog(cog)

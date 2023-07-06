@@ -267,7 +267,7 @@ class EmbedBuilder:
         all_tasks = asyncio.tasks.all_tasks()
         files, lines = count("./bot")
         embed = self.get_default(
-            name="Quora Bot Status",
+            title="Quora Bot Status",
             colour=Colour.random(),
         )
         bot = self.bot

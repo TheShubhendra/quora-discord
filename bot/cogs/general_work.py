@@ -3,7 +3,6 @@ import subprocess
 from discord.ext import commands
 import discord
 from bot.utils import count_file_and_lines as count
-from discord_components import SelectOption, Select
 import logging
 from quora.user import subdomains
 BOT_INVITE_LINK = "https://discord.com/api/oauth2/authorize?client_id=838250557805821992&permissions=2147765312&scope=bot"
@@ -15,35 +14,8 @@ class General(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.embed = self.bot.embed
-        self.select_options = [
-            SelectOption(
-                label="Latency",
-                value="ping",
-            ),
-            SelectOption(
-                label="Profile Picture",
-                value="pic",
-            ),
-            SelectOption(
-                label="Profile Bio",
-                value="bio",
-            ),
-            SelectOption(
-                label="Latest Answers",
-                value="answers",
-            ),
-            SelectOption(
-                label="Knows about",
-                value="knows",
-            ),
-        ]
         self.logger = logging.getLogger(__name__)
-        self.components = [
-            Select(
-                placeholder="Select sections",
-                options=self.select_options,
-            )
-        ]
+
 
     @commands.command()
     async def ping(self, ctx):
@@ -104,6 +76,6 @@ class General(commands.Cog):
         await ctx.send(embed=embed)
 
 
-def setup(bot):
+async def setup(bot):
     x = General(bot)
-    bot.add_cog(x)
+    await bot.add_cog(x)

@@ -98,6 +98,6 @@ class Profile(ProfileHelper, commands.Cog):
         await self._generate_view(ctx, user_or_username, "pic", language)
 
 
-def setup(bot):
+async def setup(bot):
     x = Profile(bot)
-    bot.add_cog(x)
+    await bot.add_cog(x)
