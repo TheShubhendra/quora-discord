@@ -1,3 +1,5 @@
+import time
+
 import discord
 from discord.ext import commands
 from .db.database import DatabaseManager
@@ -16,14 +18,27 @@ class QuoraBot(commands.Bot, DatabaseManager):
         logging_channel_id: discord.Object = None,
     ) -> None:
         super().__init__(
-            intents=intents, command_prefix="$", activity=discord.Game(name="Quora API")
+            intents=intents, command_prefix="q!", activity=discord.Game(name="Quora API")
         )
         self.LOGGING_GUILD = LOGGING_GUILD
         self.database = create_engine(database_url, echo=True).connect()
         self.LOGGING_CHANNEL = logging_channel_id
         self.logging = logging
-        self.db: DatabaseManager = DatabaseManager(databaseurl=database_url, echo=False)
+        self.db: DatabaseManager = DatabaseManager(database_url=database_url, echo=False)
         self.cache_manager = None
+        self.db.base.metadata.create_all(self.db.engine)
+        self.start_time = time.time()
+
+    @property
+    def default_embed(self):
+        embed = discord.Embed(color=0x2F3136)
+        embed.set_footer(text="Quora Bot")
+        return embed
+
+    @property
+    def up_time(self) -> float:
+        return time.time() - self.start_time
+
 
     async def setup_hook(self):
         await self.load_custom_files_extensions(path="bot/cogs")
@@ -42,3 +57,4 @@ class QuoraBot(commands.Bot, DatabaseManager):
                 ".py"
             ):
                 await self.load_extension(files_and_folders.replace("/", ".")[:-3])
+                self.logging.info(f"Loaded {files_and_folders.replace('/', '.')[:-3]}")

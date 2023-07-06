@@ -7,6 +7,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
+
 Base = declarative_base()
 
 
@@ -33,18 +34,22 @@ class Profile(Base):
     answer_count = Column(Integer, default=0)
 
 
-
 class User(Base):
     __tablename__ = "users"
-    discord_id = Column(BigInteger, primary_key=True)
+    id = Column(Integer, primary_key=True)
+    discord_id = Column(BigInteger)
     discord_username = Column(String(100))
     quora_username = Column(String(100))
     follower_count = Column(Integer, default=0)
     access = Column(String(10), default="public")
-    # watchers = relationship("Watcher", backref="user")
-    # profiles = relationship("Profile", backref="user")
+    watchers = relationship("Watcher", backref="user")
+    profiles = relationship("Profile", backref="user")
 
 
 __all__ = [
-    User
+    Base,
+    Profile,
+    Guild,
+    User,
+    Watcher,
 ]

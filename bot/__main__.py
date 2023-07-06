@@ -12,8 +12,6 @@ TOKEN = os.environ["TOKEN"]
 MY_GUILD = discord.Object(id=int(os.environ["GUILD"]))
 LOGGING_CHANNEL = discord.Object(id=int(os.environ["LOGGING_CHANNEL"]))
 DATABASE_URL = os.environ["DATABASE_URL"]
-REDIS_HOSTNAME = os.environ["REDIS_HOSTNAME"]
-REDIS_PORT = os.environ["REDIS_PORT"]
 
 
 client = QuoraBot(
@@ -29,7 +27,8 @@ client = QuoraBot(
 async def on_ready():
     server_name = client.get_guild(client.LOGGING_GUILD.id)
     client.logging.info(
-        f"Bot is ready | Exclusive commands are loaded in {server_name.name}({server_name.id})"
+        f"Bot is ready | Exclusive commands are loaded\
+         in {server_name.name}({server_name.id})"
     )
 
 
