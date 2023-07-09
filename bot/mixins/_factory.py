@@ -1,6 +1,7 @@
 from quora import User
 from aiohttp import ClientSession
 
+
 class QuoraUser(User):
     def profile(self, *args, cache_exp=180, **kwargs):
         return super().profile(*args, **kwargs, cache_exp=cache_exp)

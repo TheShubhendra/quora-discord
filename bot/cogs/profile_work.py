@@ -27,6 +27,7 @@ class Profile(ProfileHelper, commands.Cog):
         username=None,
     ):
         """Links your Quora profile."""
+        raise Exception("This command is temporarily disabled. user profile command instead.")
         await self._setprofile_view(ctx, username)
 
     @commands.command(

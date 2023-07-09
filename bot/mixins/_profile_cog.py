@@ -1,6 +1,8 @@
+import traceback
 from asyncio import TimeoutError
 
 import discord.ui
+import quora
 from discord.ui import Select, Button
 from discord import SelectOption, ButtonStyle
 from quora.user import subdomains
@@ -8,39 +10,39 @@ from quora.exceptions import ProfileNotFoundError
 from discord.ext.commands import CommandError
 from bot.utils import extract_quora_username
 
+from ..database.tables import User as DBUser
+
+class ProfileInput(discord.ui.Modal, title='profile'):
+    username_or_url = discord.ui.TextInput(
+        label='Username or Profile URL',
+        placeholder='Enter the username or quora profile URL ',
+    )
+
+    def __init__(self, bot, language: str):
+        super().__init__(timeout=60.0)
+        self.bot = bot
+        self.language = language
+
+    async def on_submit(self, interaction: discord.Interaction):
+        username = extract_quora_username(self.username_or_url.value)
+        if username is None:
+            await interaction.response.send_message("Username or URL is invalid", ephemeral=True)
+        else:
+            try:
+                await self.bot.get_quora(username).profile(language=self.language)
+                await self.bot.get_cog("Profile")._setprofile(interaction.user, username, self.language)
+                await interaction.response.send_message(f"Profile linked successfully", ephemeral=True)
+            except ProfileNotFoundError:
+                await interaction.response.send_message(
+                    f"No profile found with the username {username} on Quora {self.language}", ephemeral=True)
+
+    async def on_error(self, interaction: discord.Interaction, error: Exception) -> None:
+        await interaction.response.send_message('Oops! Something went wrong.', ephemeral=True)
+        # Make sure we know what the error actually is
+        traceback.print_exception(type(error), error, error.__traceback__)
+
 
 class ProfileHelper:
-    def __init__(self, *args, **kwargs):
-        # self.select_options = [
-        #     SelectOption(
-        #         label="General Profile",
-        #         value="profile",
-        #     ),
-        #     SelectOption(
-        #         label="Profile Picture",
-        #         value="pic",
-        #     ),
-        #     SelectOption(
-        #         label="Profile Bio",
-        #         value="bio",
-        #     ),
-        #     SelectOption(
-        #         label="Latest Answers",
-        #         value="answers",
-        #     ),
-        #     SelectOption(
-        #         label="Knows about",
-        #         value="knows",
-        #     ),
-        # ]
-        # self.components = [
-        #     Select(
-        #         placeholder="Select sections",
-        #         options=self.select_options,
-        #     )
-        # ]
-        # self.embed = kwargs.get("embed")
-        pass
 
     async def _get_embed(self, user, view, language="en"):
         try:
@@ -74,13 +76,14 @@ on Quora {subdomains[language]}"
             view="general",
             language="en",
     ):
-        if isinstance(user_or_username, str):
+        if isinstance(user_or_username, quora.User):
+            user = user_or_username
+        elif isinstance(user_or_username, str):
             user = self.bot.get_quora(user_or_username)
+        elif isinstance(user_or_username, DBUser):
+            user = self.bot.get_quora(user_or_username.quora_username)
         elif user_or_username is None:
             return
-        else:
-            user = self.bot.get_quora(user_or_username.username)
-            language = "en"
         profile_view = discord.ui.View()
         select_options = [
             SelectOption(
@@ -123,7 +126,6 @@ on Quora {subdomains[language]}"
             view=profile_view,
         )
 
-
     async def get_username(self, ctx, quora_username=None):
         if len(ctx.message.mentions) > 0:
             discord_id = ctx.message.mentions[0].id
@@ -136,7 +138,9 @@ related to {ctx.message.mentions[0]}"
         elif quora_username is None:
             if not self.bot.db.does_user_exist(ctx.author.id):
                 async def callback(inter):
-                    await self._setprofile_view(ctx)
+                    await inter.response.send_modal(
+                        ProfileInput(self.bot, "en"),
+                    )
 
                 view = discord.ui.View()
                 button = Button(label="Set Profile", custom_id="setprofile", style=ButtonStyle.green)
@@ -151,12 +155,9 @@ Please link your profile first or pass any username with the command.",
                     ),
                     view=view,
                 )
-                return
             return self.bot.db.get_user(ctx.author.id)
-        if quora_username is not None:
-            return quora_username
         else:
-            return
+            return self.bot.get_quora(quora_username)
 
     async def _setprofile_view(self, ctx, username=None, manage=True):
         if manage and self.bot.db.does_user_exist(discord_id=ctx.author.id):
@@ -169,28 +170,7 @@ Please link your profile first or pass any username with the command.",
                     description="Please send your Quora username or profile link in order to link your profile with the bot.",
                 )
             )
-            while True:
-                try:
-                    msg = await self.bot.wait_for(
-                        "message",
-                        check=lambda x: x.author == ctx.author
-                                        and x.channel == message.channel,
-                        timeout=20,
-                    )
-                except TimeoutError:
-                    await ctx.send(
-                        embed=self.embed.get_default(
-                            title="Time out",
-                            description=f"{ctx.author.mention} you failed to reply with your Quora username or profile link in given time",
-                        )
-                    )
-                    return
-                username = extract_quora_username(msg.content)
-                if username is None:
-                    await ctx.send("Please send valid username")
-                    continue
-                else:
-                    break
+
 
         embed = self.embed.get_default(
             title="Set Profile",
@@ -264,8 +244,11 @@ Please link your profile first or pass any username with the command.",
             components=[],
         )
 
-    async def _setprofile(self, user, username, language="en"):
-        profile = await self.bot.get_quora(username).profile(language=language)
+    async def _setprofile(self, user: discord.User, username: str, language="en"):
+        print(username)
+        quser = quora.User(username)
+        print(quser)
+        profile = await quser.profile(language=language)
         user_id = user.id
         user = self.bot.db.add_user(
             user_id,
