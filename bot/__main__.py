@@ -15,7 +15,7 @@ from .bot import QuoraBot
 DATABASE_URL = config("DATABASE_URL")
 REDIS_URL = config("REDIS_URL", None)
 TOKEN = config("TOKEN")
-# OWNER_ID = int(config("OWNER_ID", None))
+OWNER_ID = int(config("OWNER_ID", None))
 LOGGING = int(config("LOGGING_LEVEL", 20))
 LOG_CHANNEL = config("LOG_CHANNEL", None)
 RUN_WATCHER = bool(int(config("RUN_WATCHER", 0)))
@@ -72,7 +72,7 @@ intents = Intents.all()
 
 bot = QuoraBot(
     command_prefix="q!",
-    # owner_id=OWNER_ID,
+    owner_id=OWNER_ID,
     case_insensitive=True,
     strip_after_prefix=True,
     description="This bot lets you to interact with Quora.",
@@ -80,7 +80,7 @@ bot = QuoraBot(
     intents=intents,
     help_command=QuoraHelpCommand(),
     watcher=Watcher(),
-    # log_channel_id=LOG_CHANNEL,
+    log_channel_id=(int(LOG_CHANNEL) if LOG_CHANNEL else None),
     # cache_client=cache_client,
     database_url=DATABASE_URL,
     redis_url=REDIS_URL,
