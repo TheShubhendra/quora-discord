@@ -97,10 +97,12 @@ bot = QuoraBot(
 
 
 
-if RUN_WATCHER:
-    bot.load_module("/bot/modules/whandler.py", "whandler")
-if SEND_STATS:
-    bot.load_module("/bot/modules/send_stats.py", "stats_handler")
+@bot.listen("on_ready")
+async def on_ready():
+    if RUN_WATCHER:
+        bot.load_module("/bot/modules/whandler.py", "whandler")
+    if SEND_STATS:
+        bot.load_module("/bot/modules/send_stats.py", "stats_handler")
 
 
 @bot.listen("on_member_update")
