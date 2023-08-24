@@ -54,6 +54,7 @@ class QuoraBot(commands.Bot, WatcherMixin, ObjectFactory):
         self.moderators_id = moderators_id
         self._session = session
         self.send_stats = send_stats
+        self.owner_guild_id = kwargs.get("owner_guild_id", None)
 
     async def on_command_error(
         self,
@@ -132,7 +133,13 @@ command: {ctx.message.id} {ctx.message.content}
         return member == self.owner_id
 
     async def setup_hook(self) -> None:
+
         await self.load_custom_files_extensions("bot/cogs")
+        if self.owner_guild_id is not None:
+            guild = await self.fetch_guild(self.owner_guild_id)
+            self.tree.copy_global_to(guild=guild)
+            self.logger.info(f"Loaded global data to {guild.name}")
+        await self.tree.sync()
 
     async def load_custom_files_extensions(self, path):
         """

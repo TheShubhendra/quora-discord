@@ -24,7 +24,7 @@ RUN_WATCHER = bool(int(config("RUN_WATCHER", 0)))
 # MC_PASSWORD = config("MEMCACHEDCLOUD_PASSWORD")
 MODERATORS_ID = config("MODERATORS_ID", "0")
 SEND_STATS = bool(int(config("SEND_STATS", 0)))
-
+OWNER_GUILD = config("OWNER_GUILD", None)
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(message)s",
@@ -86,6 +86,7 @@ bot = QuoraBot(
     redis_url=REDIS_URL,
     run_watcher=RUN_WATCHER,
     send_stats=SEND_STATS,
+    owner_guild_id = OWNER_GUILD if OWNER_GUILD else None,
     moderators_id=list(
         map(
             int,
